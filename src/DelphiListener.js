@@ -4,7 +4,7 @@ const fetch = require("node-fetch");
 
 const REQUESTS_TABLE = "rngrequests";
 
-class RequestListener {
+class DelphiListener {
   constructor(
       oracleContract,
       oracleName,
@@ -107,4 +107,4 @@ class RequestListener {
   }
 }
 
-module.exports = RequestOracle;
+module.exports = DelphiListener;

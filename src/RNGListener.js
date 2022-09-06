@@ -3,7 +3,7 @@ const HyperionStreamClient = require("@eosrio/hyperion-stream-client").default;
 const fetch = require("node-fetch");
 const { BigNumber, ethers, utils } = require("ethers");
 
-class OracleBridge {
+class RNGListener {
     constructor(
         bridgeNativeContract,
         bridgeNativeName,
@@ -106,4 +106,4 @@ class OracleBridge {
     }
 }
 
-module.exports = OracleBridge;
+module.exports = RNGListener;

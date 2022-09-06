@@ -9,6 +9,7 @@
     "dotenv": "^9.0.0",
     "eosjs": "^21.0.4",
     "eosjs-ecc": "^4.0.7",
+    "ethers": "^5.7.0",
     "node-fetch": "^2.6.1"
   }
 }
