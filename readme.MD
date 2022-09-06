@@ -1,5 +1,9 @@
 # Telos Oracles Listeners
 
+## Requirement
+
+This repository requires NodeJS 14+, NPM and PM2
+
 ## Setup instructions
 
 This is for testnet, change to mainnet where appropriate
