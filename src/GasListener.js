@@ -1,29 +1,24 @@
 const fetch = require("node-fetch");
 const {BigNumber, ethers } = require("ethers");
 const ABI = [{ "inputs": [], "name": "gasPrice", "outputs": [{ "internalType": "uint256",  "name": "", "type": "uint256"}],  "stateMutability": "view", "type": "function"}]
-
+const EVMListener = require("./EVMListener");
 const CONFIG_TABLE = "config";
 
-class GasListener {
+class GasListener extends EVMListener {
+
     constructor(
-        contract_account,
-        evm_contract_address,
-        bridgeName,
+        bridgeAccount,
         oracleName,
         oraclePermission,
+        oracleKey,
+        rpc,
         api,
+        evm_contract_address,
         evm_provider,
         evm_api,
         interval
     ) {
-        this.contract_account = contract_account;
-        this.bridgeName = bridgeName;
-        this.oracleName = oracleName;
-        this.oraclePermission = oraclePermission;
-        this.evm_contract_address = evm_contract_address;
-        this.api = api;
-        this.evm_api = evm_api;
-        this.evm_provider = evm_provider;
+        super(bridgeAccount, oracleName, oraclePermission, oracleKey, rpc, api, evm_provider, evm_api);
         this.interval = interval;
     }
 
@@ -65,7 +60,7 @@ class GasListener {
                 }]
             }, {
                 blocksBehind: 3,
-                expireSeconds: 30,
+                expireSeconds: 90,
             }).then(result => {
                 console.log(`Updated price !`);
             }).catch(e => {

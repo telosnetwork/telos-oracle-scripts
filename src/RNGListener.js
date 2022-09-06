@@ -2,29 +2,9 @@ const ecc = require("eosjs-ecc");
 const HyperionStreamClient = require("@eosrio/hyperion-stream-client").default;
 const fetch = require("node-fetch");
 const { BigNumber, ethers, utils } = require("ethers");
+const Listener = require("./Listener");
 
-class RNGListener {
-    constructor(
-        bridgeNativeContract,
-        bridgeNativeName,
-        bridgeNativePermission,
-        bridgeEVMAddress,
-        storageLengthKey,
-        rpc,
-        api,
-        rpcEVM,
-        signerKey
-    ) {
-        this.bridgeNativeContract = bridgeNativeContract;
-        this.bridgeNativeName = bridgeNativeName;
-        this.bridgeNativePermission = bridgeNativePermission;
-        this.bridgeEVMAddress = bridgeEVMAddress;
-        this.rpc = rpc;
-        this.api = api;
-        this.rpcEVM = rpcEVM;
-        this.storageLengthKey = storageLengthKey;
-        this.counter = 0;
-    }
+class RNGListener extends Listener {
     async start() {
         try {
             // Get the scope for our EVM contrat in Mandel eosio.evm contract
@@ -101,7 +81,7 @@ class RNGListener {
         };
 
         this.streamClient.connect(() => {
-            console.log("Connected to Hyperion Stream !");
+            console.log("Connected to Hyperion Stream for RNG Oracle and Bridge");
         });
     }
 }

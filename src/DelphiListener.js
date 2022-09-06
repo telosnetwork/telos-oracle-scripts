@@ -1,25 +1,9 @@
 const ecc = require("eosjs-ecc");
 const HyperionStreamClient = require("@eosrio/hyperion-stream-client").default;
 const fetch = require("node-fetch");
+const Listener = require("./Listener");
 
-const REQUESTS_TABLE = "rngrequests";
-
-class DelphiListener {
-  constructor(
-      oracleContract,
-      oracleName,
-      oraclePermission,
-      rpc,
-      api,
-      signerKey
-  ) {
-    this.oracleContract = oracleContract;
-    this.oracleName = oracleName;
-    this.oraclePermission = oraclePermission;
-    this.rpc = rpc;
-    this.api = api;
-    this.signerKey = signerKey;
-  }
+class DelphiListener extends Listener {
 
   async start() {
     await this.startStream();
@@ -39,9 +23,9 @@ class DelphiListener {
     let headBlock = getInfo.head_block_num;
     this.streamClient.onConnect = () => {
       this.streamClient.streamDeltas({
-        code: this.oracleContract,
-        table: REQUESTS_TABLE,
-        scope: this.oracleContract,
+        code: 'eosio.evm',
+        table: "accountstate",
+        scope: this.scope,
         payer: "",
         start_from: headBlock,
         read_until: 0,
@@ -51,60 +35,52 @@ class DelphiListener {
     this.streamClient.onData = async (data, ack) => {
       if (data.content.present) await this.signRow(data.content.data);
 
+      if(this.counter == 0){
+        this.api.transact({
+          actions: [{
+            account: this.bridgeNativeContract,
+            name: 'reqnotify',
+            authorization: [{ actor: this.bridgeNativeContract, permission: 'active' }],
+            data: {},
+          }]
+        }, {
+          blocksBehind: 3,
+          expireSeconds: 90,
+        }).then(result => {
+          console.log('\nCalled reqnotify()');
+        }).catch(e => {
+          console.log('\nCaught exception: ' + e);
+        });
+      }
+
+      this.counter++;
+      if(this.counter == 11){
+        this.counter = 0;
+      }
+
       ack();
     };
 
     this.streamClient.connect(() => {
-      console.log("Connected to Hyperion Stream!");
+      console.log("Connected to Hyperion Stream for Delphi Oracle Bridge");
     });
   }
 
   async doTableCheck() {
     console.log(`Doing table check...`);
     const results = await this.rpc.get_table_rows({
-      code: this.oracleContract,
-      scope: this.oracleContract,
-      table: REQUESTS_TABLE,
+      code: 'eosio.evm',
+      scope: this.scope,
+      table: "accountstate",
       limit: 1000,
     });
 
-    results.rows.forEach((row) => this.signRow(row));
+    results.rows.forEach((row) => {
+
+    });
     console.log(`Done doing table check!`);
   }
 
-  async signRow(row) {
-    console.log(`Signing request_id: ${row.request_id}...`)
-    if (row.oracle1 == this.oracleName || row.oracle2 == this.oracleName)
-      return;
-
-    try {
-      const result = await this.api.transact(
-          {
-            actions: [
-              {
-                account: this.oracleContract,
-                name: "submitrand",
-                authorization: [
-                  {
-                    actor: this.oracleName,
-                    permission: this.oraclePermission,
-                  },
-                ],
-                data: {
-                  request_id: row.request_id,
-                  oracle_name: this.oracleName,
-                  sig: ecc.signHash(row.digest, this.signerKey),
-                },
-              },
-            ],
-          },
-          { blocksBehind: 10, expireSeconds: 60 }
-      );
-      console.log(`Signed request ${row.request_id}`);
-    } catch (e) {
-      console.error(`Submitting signature failed: ${e}`);
-    }
-  }
 }
 
 module.exports = DelphiListener;
