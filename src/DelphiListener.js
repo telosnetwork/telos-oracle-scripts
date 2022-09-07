@@ -26,7 +26,7 @@ class DelphiListener extends Listener {
       this.streamClient.streamDeltas({
         code: 'eosio.evm',
         table: "accountstate",
-        scope: process.env.DELPHI_EOSIO_EVM_SCOPE,
+        scope: this.bridge.eosio_evm_scope,
         payer: "",
         start_from: headBlock,
         read_until: 0,
@@ -48,9 +48,9 @@ class DelphiListener extends Listener {
           blocksBehind: 3,
           expireSeconds: 90,
         }).then(result => {
-          console.log('\nCalled reqnotify()');
+          this.log('\nCalled reqnotify()');
         }).catch(e => {
-          console.log('\nCaught exception: ' + e);
+          this.log('\nCaught exception: ' + e);
         });
       }
 
@@ -63,15 +63,15 @@ class DelphiListener extends Listener {
     };
 
     this.streamClient.connect(() => {
-      console.log("Connected to Hyperion Stream for Delphi Oracle Bridge");
+      this.log("Connected to Hyperion Stream for Delphi Oracle Bridge");
     });
   }
 
   async doTableCheck() {
-    console.log(`Doing table check...`);
+    this.log(`Doing table check...`);
     const results = await this.rpc.get_table_rows({
       code: "eosio.evm",
-      scope: process.env.DELPHI_EOSIO_EVM_SCOPE,
+      scope: this.bridge.eosio_evm_scope,
       table: "accountstate",
       limit: 1000,
     });
@@ -79,7 +79,7 @@ class DelphiListener extends Listener {
     results.rows.forEach((row) => {
 
     });
-    console.log(`Done doing table check!`);
+    this.log(`Done doing table check!`);
   }
 
 }

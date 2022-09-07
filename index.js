@@ -22,16 +22,17 @@ const api = new Api({
 });
 
 const oracle = {"name": process.env.ORACLE_NAME, "permission": process.env.ORACLE_PERMISSION, "key":  process.env.ORACLE_SIGNER_KEY};
+const listeners = {"delphi": parseInt(process.env.DELPHI_LISTENER), "rng": parseInt(process.env.RNG_LISTENER), "gas":  parseInt(process.env.GAS_LISTENER)};
 
-if(parseInt(process.env.DELPHI_LISTENER) == 1){
-    const delphiRequestListener = new DelphiListener(oracle, rpc, api, {"antelope_account": process.env.DELPHI_CONTRACT, "eth_account": process.env.GAS_EVM_CONTRACT })
+if(listeners.delphi){
+    const delphiRequestListener = new DelphiListener(oracle, rpc, api, {"antelope_account": process.env.DELPHI_CONTRACT, "eosio_evm_scope" : process.env.DELPHI_EOSIO_EVM_SCOPE })
     delphiRequestListener.start();
 }
-if(parseInt(process.env.RNG_LISTENER) == 1){
-    const rngRequestListener = new RNGListener(oracle, rpc, api, {"antelope_account": process.env.RNG_CONTRACT })
+if(listeners.rng){
+    const rngRequestListener = new RNGListener(oracle, rpc, api, {"antelope_account": process.env.RNG_CONTRACT, "eosio_evm_scope" : process.env.RNG_EOSIO_EVM_SCOPE })
     rngRequestListener.start();
 }
-if(parseInt(process.env.GAS_LISTENER) == 1){
+if(listeners.gas){
     const evm_api = new TelosEvmApi({
         endpoint: process.env.EVM_API_ENDPOINT,
         chainId: process.env.CHAIN_ID,

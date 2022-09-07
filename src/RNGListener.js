@@ -3,6 +3,7 @@ const HyperionStreamClient = require("@eosrio/hyperion-stream-client").default;
 const fetch = require("node-fetch");
 const { BigNumber, ethers, utils } = require("ethers");
 const Listener = require("./Listener");
+const ACCOUNT_STATE_TABLE = "accountstate";
 
 class RNGListener extends Listener {
     async start() {
@@ -20,16 +21,16 @@ class RNGListener extends Listener {
     }
 
     async doTableCheck() {
-        console.log(`Doing table check...`);
+        this.log(`Doing table check...`);
         const results = await this.rpc.get_table_rows({
             code: this.oracleContract,
             table: ACCOUNT_STATE_TABLE,
-            scope: process.env.RNG_EOSIO_EVM_SCOPE,
+            scope: this.bridge.eosio_evm_scope,
             limit: 1000,
         });
 
         results.rows.forEach((row) => this.signRow(row));
-        console.log(`Done doing table check!`);
+        this.log(`Done doing table check!`);
     }
     async startStream() {
         this.streamClient = new HyperionStreamClient(
@@ -44,8 +45,8 @@ class RNGListener extends Listener {
         this.streamClient.onConnect = () => {
             this.streamClient.streamDeltas({
                 code: 'eosio.evm',
-                table: "accountstate",
-                scope: process.env.RNG_EOSIO_EVM_SCOPE,
+                table: ACCOUNT_STATE_TABLE,
+                scope: this.bridge.eosio_evm_scope,
                 payer: "",
                 start_from: headBlock,
                 read_until: 0,
@@ -67,9 +68,9 @@ class RNGListener extends Listener {
                         blocksBehind: 3,
                         expireSeconds: 30,
                     }).then(result => {
-                        console.log('\nCalled reqnotify()');
+                        this.log('\nCalled reqnotify()');
                     }).catch(e => {
-                        console.log('\nCaught exception: ' + e);
+                        this.log('\nCaught exception: ' + e);
                     });
                 }
                 this.counter++;
@@ -81,7 +82,7 @@ class RNGListener extends Listener {
         };
 
         this.streamClient.connect(() => {
-            console.log("Connected to Hyperion Stream for RNG Oracle and Bridge");
+            this.log("Connected to Hyperion Stream for RNG Oracle and RNG Oracle Bridge");
         });
     }
 }
