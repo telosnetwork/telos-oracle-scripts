@@ -65,7 +65,7 @@ class DelphiListener extends Listener {
         actions: [{
           account: this.bridge.antelope_account,
           name: 'reqnotify',
-          authorization: [{ actor: this.oracle.name, permission: this.oracle.permission }],
+          authorization: [{ actor: this.caller.name, permission: this.caller.permission }],
           data: {},
         }]
       }, {

@@ -1,12 +1,12 @@
 class Listener {
     constructor(
-        oracle,
+        caller,
         rpc,
         api,
         bridge
     ) {
         this.bridge = bridge;
-        this.oracle = oracle;
+        this.caller = caller;
         this.rpc = rpc;
         this.console_log = (parseInt(process.env.CONSOLE_LOG) === 1);
         this.api = api;

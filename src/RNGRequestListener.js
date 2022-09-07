@@ -84,7 +84,7 @@ class RNGRequestListener extends Listener {
 
     async signRow(row) {
         this.log(`Signing request_id: ${row.request_id}...`)
-        if (row.oracle1 == this.oracle.name || row.oracle2 == this.oracle.name)
+        if (row.oracle1 == this.caller.name || row.oracle2 == this.caller.name)
             return;
 
         try {
@@ -96,14 +96,14 @@ class RNGRequestListener extends Listener {
                             name: "submitrand",
                             authorization: [
                                 {
-                                    actor: this.oracle.name,
-                                    permission: this.oracle.permission,
+                                    actor: this.caller.name,
+                                    permission: this.caller.permission,
                                 },
                             ],
                             data: {
                                 request_id: row.request_id,
-                                oracle_name: this.oracle.name,
-                                sig: ecc.signHash(row.digest, this.key),
+                                oracle_name: this.caller.name,
+                                sig: ecc.signHash(row.digest, this.caller.key),
                             },
                         },
                     ],

@@ -6,7 +6,7 @@ const CONFIG_TABLE = "config";
 
 class GasListener extends EVMListener {
     constructor(
-        oracle,
+        caller,
         rpc,
         api,
         bridge,
@@ -14,7 +14,7 @@ class GasListener extends EVMListener {
         evm_api,
         interval
     ) {
-        super(oracle, rpc, api, bridge, evm_provider, evm_api);
+        super(caller, rpc, api, bridge, evm_provider, evm_api);
         this.interval = interval;
     }
 
@@ -51,7 +51,7 @@ class GasListener extends EVMListener {
                 actions: [{
                     account: this.bridge.antelope_account,
                     name: 'verify',
-                    authorization: [{ actor: this.oracle.name, permission: this.oracle.permission }],
+                    authorization: [{ actor: this.caller.name, permission: this.caller.permission }],
                     data: {},
                 }]
             }, {

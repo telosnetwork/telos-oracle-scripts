@@ -27,7 +27,7 @@ class RNGListener extends Listener {
     async doTableCheck() {
         this.log(`Doing table check...`);
         const results = await this.rpc.get_table_rows({
-            code: this.oracleContract,
+            code:  "rng.oracle",
             table: ACCOUNT_STATE_TABLE,
             scope: this.bridge.eosio_evm_scope,
             limit: 1000,
@@ -65,7 +65,7 @@ class RNGListener extends Listener {
                         actions: [{
                             account: this.bridge.antelope_account,
                             name: 'reqnotify',
-                            authorization: [{ actor: this.bridge.antelope_account, permission: 'active' }],
+                            authorization: [{ actor: this.caller.name, permission: this.caller.permission }],
                             data: {},
                         }]
                     }, {
