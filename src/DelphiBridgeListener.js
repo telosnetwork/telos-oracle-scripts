@@ -2,14 +2,16 @@ const ecc = require("eosjs-ecc");
 const HyperionStreamClient = require("@eosrio/hyperion-stream-client").default;
 const fetch = require("node-fetch");
 const Listener = require("./Listener");
-require('dotenv').config()
+require('dotenv').config();
+
+const MAX_BLOCK_DIFF = parseInt(process.env.MAX_BLOCK_DIFF);
+const INTERVAL_MS = parseInt(process.env.TABLE_CHECK_INTERVAL_MS);
 
 class DelphiListener extends Listener {
 
   async start() {
     await this.startStream();
     await this.doTableCheck();
-    // TODO: maybe a 15 second setInterval against doTableCheck?  In case stream takes a crap?
   }
 
   async startStream() {
@@ -34,30 +36,11 @@ class DelphiListener extends Listener {
     };
 
     this.streamClient.onData = async (data, ack) => {
-      if (data.content.present) await this.signRow(data.content.data);
-
-      if(this.counter == 0){
-        this.api.transact({
-          actions: [{
-            account: this.bridge.antelope_account,
-            name: 'reqnotify',
-            authorization: [{ actor: this.oracle.name, permission: this.oracle.permission }],
-            data: {},
-          }]
-        }, {
-          blocksBehind: 3,
-          expireSeconds: 90,
-        }).then(result => {
-          this.log('\nCalled reqnotify()');
-        }).catch(e => {
-          this.log('\nCaught exception: ' + e);
-        });
+      if(this.counter == 0) { // Counter to get only one call per new request (as listener gets called foreach row)
+        await this.notify(data);
       }
-
       this.counter++;
-      if(this.counter == 11){
-        this.counter = 0;
-      }
+      this.counter = (this.counter == 11) ? 0 : this.counter;
 
       ack();
     };
@@ -65,6 +48,34 @@ class DelphiListener extends Listener {
     this.streamClient.connect(() => {
       this.log("Connected to Hyperion Stream for Delphi Oracle Bridge");
     });
+
+    let interval = setInterval(async () => {
+      if(typeof this.streamClient.lastReceivedBlock !== "undefined" && this.streamClient.lastReceivedBlock !== 0){
+        let getInfo = await this.rpc.get_info();
+        if(MAX_BLOCK_DIFF < ( getInfo.head_block_num - this.streamClient.lastReceivedBlock)){
+          clearInterval(interval);
+          this.streamClient.disconnect();
+          await this.startStream();
+        }
+      }
+    }, INTERVAL_MS)
+  }
+  async notify(){
+      this.api.transact({
+        actions: [{
+          account: this.bridge.antelope_account,
+          name: 'reqnotify',
+          authorization: [{ actor: this.oracle.name, permission: this.oracle.permission }],
+          data: {},
+        }]
+      }, {
+        blocksBehind: 3,
+        expireSeconds: 90,
+      }).then(result => {
+        this.log('\nCalled reqnotify()');
+      }).catch(e => {
+        this.log('\nCaught exception: ' + e);
+      });
   }
 
   async doTableCheck() {
@@ -75,9 +86,13 @@ class DelphiListener extends Listener {
       table: "accountstate",
       limit: 1000,
     });
-
-    results.rows.forEach((row) => {
-
+    this.counter = 0;
+    results.rows.forEach(async(row) => {
+      if(this.counter == 0) { // Counter to get only one call per new request (as listener gets called foreach row)
+        await this.notify(data);
+      }
+      this.counter++;
+      this.counter = (this.counter == 11) ? 0 : this.counter;
     });
     this.log(`Done doing table check!`);
   }

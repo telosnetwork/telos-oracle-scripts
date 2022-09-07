@@ -3,7 +3,11 @@ const HyperionStreamClient = require("@eosrio/hyperion-stream-client").default;
 const fetch = require("node-fetch");
 const { BigNumber, ethers, utils } = require("ethers");
 const Listener = require("./Listener");
+require('dotenv').config();
+
 const ACCOUNT_STATE_TABLE = "accountstate";
+const MAX_BLOCK_DIFF = parseInt(process.env.MAX_BLOCK_DIFF);
+const INTERVAL_MS = parseInt(process.env.TABLE_CHECK_INTERVAL_MS);
 
 class RNGListener extends Listener {
     async start() {
@@ -74,16 +78,26 @@ class RNGListener extends Listener {
                     });
                 }
                 this.counter++;
-                if(this.counter == 11){
-                    this.counter = 0;
-                }
+                this.counter = (this.counter == 11) ? 0 : this.counter;
             }
             ack();
         };
 
         this.streamClient.connect(() => {
-            this.log("Connected to Hyperion Stream for RNG Oracle and RNG Oracle Bridge");
+            this.log("Connected to Hyperion Stream for RNG Oracle Bridge");
         });
+
+        let interval = setInterval(async () => {
+            if(typeof this.streamClient.lastReceivedBlock !== "undefined" && this.streamClient.lastReceivedBlock !== 0){
+                let getInfo = await this.rpc.get_info();
+                if(MAX_BLOCK_DIFF < ( getInfo.head_block_num - this.streamClient.lastReceivedBlock)){
+                    clearInterval(interval);
+                    this.streamClient.disconnect();
+                    await this.startStream();
+                }
+            }
+        }, INTERVAL_MS)
+
     }
 }
 

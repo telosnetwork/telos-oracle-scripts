@@ -1,10 +1,12 @@
 const ecc = require("eosjs-ecc");
 const HyperionStreamClient = require("@eosrio/hyperion-stream-client").default;
 const fetch = require("node-fetch");
+const Listener = require("./Listener");
+require('dotenv').config();
 
 const REQUESTS_TABLE = "rngrequests";
-const MAX_BLOCK_DIFF = 20 * 60 * 2;
-const INTERVAL_MS = 30000;
+const MAX_BLOCK_DIFF = parseInt(process.env.MAX_BLOCK_DIFF);
+const INTERVAL_MS = parseInt(process.env.TABLE_CHECK_INTERVAL_MS);
 
 class RNGRequestListener extends Listener {
 
@@ -44,7 +46,7 @@ class RNGRequestListener extends Listener {
         };
 
         this.streamClient.connect(() => {
-            this.log("Connected to Hyperion Stream!");
+            this.log("Connected to Hyperion Stream for RNG Oracle!");
         });
 
         // check lastReceivedBlock isn't too far from HEAD, else stop stream & start again
