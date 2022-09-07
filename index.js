@@ -21,13 +21,14 @@ const api = new Api({
     textEncoder: new util.TextEncoder()
 });
 
+const oracle = {"name": process.env.ORACLE_NAME, "permission": process.env.ORACLE_PERMISSION, "key":  process.env.ORACLE_SIGNER_KEY};
 
 if(parseInt(process.env.DELPHI_LISTENER) == 1){
-    const delphiRequestListener = new DelphiListener(process.env.DELPHI_CONTRACT, process.env.ORACLE_NAME, process.env.ORACLE_PERMISSION, process.env.ORACLE_SIGNER_KEY, rpc, api)
+    const delphiRequestListener = new DelphiListener(oracle, rpc, api, {"antelope_account": process.env.DELPHI_CONTRACT, "eth_account": process.env.GAS_EVM_CONTRACT })
     delphiRequestListener.start();
 }
 if(parseInt(process.env.RNG_LISTENER) == 1){
-    const rngRequestListener = new RNGListener(process.env.RNG_CONTRACT, process.env.ORACLE_NAME, process.env.ORACLE_PERMISSION, process.env.ORACLE_SIGNER_KEY, rpc, api)
+    const rngRequestListener = new RNGListener(oracle, rpc, api, {"antelope_account": process.env.RNG_CONTRACT })
     rngRequestListener.start();
 }
 if(parseInt(process.env.GAS_LISTENER) == 1){
@@ -36,10 +37,10 @@ if(parseInt(process.env.GAS_LISTENER) == 1){
         chainId: process.env.CHAIN_ID,
         ethPrivateKeys: [],
         fetch: fetch,
-        telosContract: process.env.GAS_EVM_CONTRACT,
+        telosContract: "eosio.evm",
         telosPrivateKeys: []
     });
     const evm_provider = new ethers.providers.JsonRpcProvider(process.env.EVM_RPC_ENDPOINT);
-    const gasListener = new GasListener(process.env.GAS_CONTRACT,  process.env.ORACLE_NAME, process.env.ORACLE_PERMISSION, process.env.ORACLE_SIGNER_KEY, rpc, api, process.env.GAS_EVM_CONTRACT, evm_provider, evm_api, process.env.GAS_CHECK_INTERVAL_MS)
+    const gasListener = new GasListener(oracle, rpc, api, {"antelope_account": process.env.GAS_CONTRACT, "eth_account": process.env.GAS_EVM_CONTRACT }, evm_provider, evm_api, process.env.GAS_CHECK_INTERVAL_MS)
     gasListener.start();
 }

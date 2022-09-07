@@ -1,18 +1,14 @@
 class Listener {
     constructor(
-        bridgeContract,
-        oracleName,
-        oraclePermission,
-        oracleKey,
+        oracle,
         rpc,
         api,
+        bridge
     ) {
-        this.bridgeContract = bridgeContract;
-        this.oracleName = oracleName;
-        this.oraclePermission = oraclePermission;
+        this.bridge = bridge;
+        this.oracle = oracle;
         this.rpc = rpc;
         this.api = api;
-        this.oracleKey = oracleKey;
         this.counter = 0;
     }
 }

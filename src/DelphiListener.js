@@ -2,6 +2,7 @@ const ecc = require("eosjs-ecc");
 const HyperionStreamClient = require("@eosrio/hyperion-stream-client").default;
 const fetch = require("node-fetch");
 const Listener = require("./Listener");
+require('dotenv').config()
 
 class DelphiListener extends Listener {
 
@@ -25,7 +26,7 @@ class DelphiListener extends Listener {
       this.streamClient.streamDeltas({
         code: 'eosio.evm',
         table: "accountstate",
-        scope: this.scope,
+        scope: process.env.DELPHI_EOSIO_EVM_SCOPE,
         payer: "",
         start_from: headBlock,
         read_until: 0,
@@ -38,9 +39,9 @@ class DelphiListener extends Listener {
       if(this.counter == 0){
         this.api.transact({
           actions: [{
-            account: this.bridgeNativeContract,
+            account: this.bridge.antelope_account,
             name: 'reqnotify',
-            authorization: [{ actor: this.bridgeNativeContract, permission: 'active' }],
+            authorization: [{ actor: this.oracle.name, permission: this.oracle.permission }],
             data: {},
           }]
         }, {
@@ -69,8 +70,8 @@ class DelphiListener extends Listener {
   async doTableCheck() {
     console.log(`Doing table check...`);
     const results = await this.rpc.get_table_rows({
-      code: 'eosio.evm',
-      scope: this.scope,
+      code: "eosio.evm",
+      scope: process.env.DELPHI_EOSIO_EVM_SCOPE,
       table: "accountstate",
       limit: 1000,
     });

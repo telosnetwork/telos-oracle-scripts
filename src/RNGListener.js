@@ -24,7 +24,7 @@ class RNGListener extends Listener {
         const results = await this.rpc.get_table_rows({
             code: this.oracleContract,
             table: ACCOUNT_STATE_TABLE,
-            scope: process.env.ACCOUNT_STATE_SCOPE,
+            scope: process.env.RNG_EOSIO_EVM_SCOPE,
             limit: 1000,
         });
 
@@ -45,7 +45,7 @@ class RNGListener extends Listener {
             this.streamClient.streamDeltas({
                 code: 'eosio.evm',
                 table: "accountstate",
-                scope: process.env.ACCOUNT_STATE_SCOPE,
+                scope: process.env.RNG_EOSIO_EVM_SCOPE,
                 payer: "",
                 start_from: headBlock,
                 read_until: 0,
@@ -58,9 +58,9 @@ class RNGListener extends Listener {
                 if(this.counter == 0){
                     this.api.transact({
                         actions: [{
-                            account: this.bridgeNativeContract,
+                            account: this.bridge.antelope_account,
                             name: 'reqnotify',
-                            authorization: [{ actor: this.bridgeNativeContract, permission: 'active' }],
+                            authorization: [{ actor: this.bridge.antelope_account, permission: 'active' }],
                             data: {},
                         }]
                     }, {
