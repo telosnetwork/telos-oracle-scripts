@@ -1,7 +1,8 @@
 require('dotenv').config()
-const RNGListener = require('./src/RNGListener')
-const DelphiListener = require('./src/DelphiListener')
-const GasListener = require('./src/GasListener')
+const RNGBridgeListener = require('./src/RNGBridgeListener')
+const RNGRequestListener = require('./src/RNGRequestListener')
+const DelphiBridgeListener = require('./src/DelphiBridgeListener')
+const GasBridgeListener = require('./src/GasBridgeListener')
 const eosjs = require('eosjs')
 const JsSignatureProvider = require('eosjs/dist/eosjs-jssig').JsSignatureProvider
 const JsonRpc = eosjs.JsonRpc
@@ -25,11 +26,13 @@ const oracle = {"name": process.env.ORACLE_NAME, "permission": process.env.ORACL
 const listeners = {"delphi": parseInt(process.env.DELPHI_LISTENER), "rng": parseInt(process.env.RNG_LISTENER), "gas":  parseInt(process.env.GAS_LISTENER)};
 
 if(listeners.delphi){
-    const delphiRequestListener = new DelphiListener(oracle, rpc, api, {"antelope_account": process.env.DELPHI_CONTRACT, "eosio_evm_scope" : process.env.DELPHI_EOSIO_EVM_SCOPE })
-    delphiRequestListener.start();
+    const delphiBridgeListener = new DelphiBridgeListener(oracle, rpc, api, {"antelope_account": process.env.DELPHI_CONTRACT, "eosio_evm_scope" : process.env.DELPHI_EOSIO_EVM_SCOPE })
+    delphiBridgeListener.start();
 }
 if(listeners.rng){
-    const rngRequestListener = new RNGListener(oracle, rpc, api, {"antelope_account": process.env.RNG_CONTRACT, "eosio_evm_scope" : process.env.RNG_EOSIO_EVM_SCOPE })
+    const rngBridgeListener = new RNGBridgeListener(oracle, rpc, api, {"antelope_account": process.env.RNG_CONTRACT, "eosio_evm_scope" : process.env.RNG_EOSIO_EVM_SCOPE })
+    rngBridgeListener.start();
+    const rngRequestListener = new RNGRequestListener(oracle, rpc, api, {"antelope_account": process.env.RNG_CONTRACT, "eosio_evm_scope" : process.env.RNG_EOSIO_EVM_SCOPE })
     rngRequestListener.start();
 }
 if(listeners.gas){
@@ -42,6 +45,6 @@ if(listeners.gas){
         telosPrivateKeys: []
     });
     const evm_provider = new ethers.providers.JsonRpcProvider(process.env.EVM_RPC_ENDPOINT);
-    const gasListener = new GasListener(oracle, rpc, api, {"antelope_account": process.env.GAS_CONTRACT, "eth_account": process.env.GAS_EVM_CONTRACT }, evm_provider, evm_api, process.env.GAS_CHECK_INTERVAL_MS)
-    gasListener.start();
+    const gasBridgeListener = new GasBridgeListener(oracle, rpc, api, {"antelope_account": process.env.GAS_CONTRACT, "eth_account": process.env.GAS_EVM_CONTRACT }, evm_provider, evm_api, process.env.GAS_CHECK_INTERVAL_MS)
+    gasBridgeListener.start();
 }
