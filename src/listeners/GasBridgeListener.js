@@ -66,7 +66,7 @@ class GasListener extends EVMListener {
                 this.log('Failed, caught exception: ' + e);
             });
         } else {
-            this.log(`No update`);
+            this.log(`No update needed for gas price`);
         }
     }
 

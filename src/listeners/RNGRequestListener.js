@@ -19,6 +19,8 @@ class RNGRequestListener extends Listener {
     }
 
     async startStream() {
+        let getInfo = await this.rpc.get_info();
+        let headBlock = getInfo.head_block_num;
         this.streamClient = new HyperionStreamClient(
             this.hyperion,
             {
@@ -26,8 +28,7 @@ class RNGRequestListener extends Listener {
                 fetch: fetch,
             }
         );
-        let getInfo = await this.rpc.get_info();
-        let headBlock = getInfo.head_block_num;
+        this.streamClient.lastReceivedBlock = headBlock;
         this.streamClient.onConnect = () => {
             this.streamClient.streamDeltas({
                 code: this.oracle,
@@ -40,13 +41,13 @@ class RNGRequestListener extends Listener {
         };
 
         this.streamClient.onData = async (data, ack) => {
+            this.streamClient.lastReceivedBlock = data.block_num;
             if (data.content.present) await this.signRow(data.content.data);
-
             ack();
         };
 
         this.streamClient.connect(() => {
-            this.log("Connected to Hyperion Stream for RNG Oracle !");
+            this.log("Connected to Hyperion Stream for RNG Oracle Requests !");
         });
 
         // check lastReceivedBlock isn't too far from HEAD, else stop stream & start again
@@ -55,6 +56,7 @@ class RNGRequestListener extends Listener {
                 let getInfo = await this.rpc.get_info();
                 if(this.max_block_diff < ( getInfo.head_block_num - this.streamClient.lastReceivedBlock)){
                     clearInterval(interval);
+                    this.log("Restarting stream  for RNG Oracle Requests...");
                     this.streamClient.disconnect();
                     await this.startStream();
                 }

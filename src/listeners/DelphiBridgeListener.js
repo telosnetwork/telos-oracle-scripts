@@ -12,9 +12,14 @@ class DelphiBridgeListener extends Listener {
   async start() {
     await this.startStream();
     await this.doTableCheck();
+    setInterval(async () => {
+      await this.doTableCheck();
+    }, this.check_interval_ms)
   }
 
   async startStream() {
+    let getInfo = await this.rpc.get_info();
+    let headBlock = getInfo.head_block_num;
     this.streamClient = new HyperionStreamClient(
         this.hyperion,
         {
@@ -22,8 +27,7 @@ class DelphiBridgeListener extends Listener {
           fetch: fetch,
         }
     );
-    let getInfo = await this.rpc.get_info();
-    let headBlock = getInfo.head_block_num;
+    this.streamClient.lastReceivedBlock = headBlock;
     this.streamClient.onConnect = () => {
       this.streamClient.streamDeltas({
         code: 'eosio.evm',
@@ -36,12 +40,14 @@ class DelphiBridgeListener extends Listener {
     };
 
     this.streamClient.onData = async (data, ack) => {
-      if(this.counter == 0) { // Counter to get only one call per new request (as listener gets called foreach row)
-        await this.notify(data);
+      this.streamClient.lastReceivedBlock = data.block_num;
+      if (data.content.present) {
+        if (this.counter == 0) { // Counter to get only one call per new request (as listener gets called foreach row)
+          await this.notify(data);
+        }
+        this.counter++;
+        this.counter = (this.counter == 11) ? 0 : this.counter;
       }
-      this.counter++;
-      this.counter = (this.counter == 11) ? 0 : this.counter;
-
       ack();
     };
 
@@ -54,6 +60,7 @@ class DelphiBridgeListener extends Listener {
         let getInfo = await this.rpc.get_info();
         if(this.max_block_diff < ( getInfo.head_block_num - this.streamClient.lastReceivedBlock)){
           clearInterval(interval);
+          this.log("Restarting stream for Delphi Oracle Bridge...");
           this.streamClient.disconnect();
           await this.startStream();
         }
@@ -79,7 +86,7 @@ class DelphiBridgeListener extends Listener {
   }
 
   async doTableCheck() {
-    this.log(`Doing table check...`);
+    this.log(`Doing table check for Delphi Oracle Bridge...`);
     const results = await this.rpc.get_table_rows({
       code: "eosio.evm",
       scope: this.bridge.eosio_evm_scope,

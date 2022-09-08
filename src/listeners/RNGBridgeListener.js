@@ -23,9 +23,9 @@ class RNGBridgeListener extends Listener {
             scope: this.bridge.eosio_evm_scope,
             limit: 1000,
         });
-
+        this.counter = 0;
         results.rows.forEach(async (row) => {
-            if(this.counter == 0){
+            if(this.counter == 11){
                 this.api.transact({
                     actions: [{
                         account: this.bridge.antelope_account,
@@ -41,13 +41,15 @@ class RNGBridgeListener extends Listener {
                 }).catch(e => {
                     this.log('\nCaught exception: ' + e);
                 });
+                return;
             }
             this.counter++;
-            this.counter = (this.counter == 11) ? 0 : this.counter;
         });
-        this.log(`Done doing table check!`);
+        this.log('Done doing table check!');
     }
     async startStream() {
+        let getInfo = await this.rpc.get_info();
+        let headBlock = getInfo.head_block_num;
         this.streamClient = new HyperionStreamClient(
             this.hyperion,
             {
@@ -55,8 +57,7 @@ class RNGBridgeListener extends Listener {
                 fetch: fetch,
             }
         );
-        let getInfo = await this.rpc.get_info();
-        let headBlock = getInfo.head_block_num;
+        this.streamClient.lastReceivedBlock = headBlock;
         this.streamClient.onConnect = () => {
             this.streamClient.streamDeltas({
                 code: 'eosio.evm',
@@ -69,6 +70,7 @@ class RNGBridgeListener extends Listener {
         };
 
         this.streamClient.onData = async (data, ack) => {
+            this.streamClient.lastReceivedBlock = data.block_num;
             if (data.content.present){
                 let row = data.content.data;
                 if(this.counter == 0){
@@ -103,6 +105,7 @@ class RNGBridgeListener extends Listener {
                 let getInfo = await this.rpc.get_info();
                 if(this.max_block_diff < ( getInfo.head_block_num - this.streamClient.lastReceivedBlock)){
                     clearInterval(interval);
+                    this.log("Restarting stream for RNG Oracle Bridge...");
                     this.streamClient.disconnect();
                     await this.startStream();
                 }
