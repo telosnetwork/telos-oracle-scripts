@@ -40,13 +40,17 @@ vi config.yml
 
 ####   RNG Oracle Request Listener
 
+This listeners listens to requests made to the RNG Oracle and signs them if needed.
+
 ####   Gas Bridge Listener
+
+This listeners compares the gas price from eosio.evm to the one stored in the EVM GasOracleBridge contract. If it is different it calls the gasbridge antelope contract's `verify()` action that also compares the prices & updates the price of the GasOracleBridge on EVM if needed.
 
 ### > Updaters
 
 ####   Delphi Updater
 
-This updater supports 2 methods: `http` and `file`. Follow the steps below to configure them
+This updater retreives pair prices and sends them to the Delphi Oracle. It supports 2 methods: `http` and `file`. Follow the steps below to configure them
 
 ##### http
 
