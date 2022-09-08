@@ -1,9 +1,9 @@
 # ANTELOPE GENRAL CONFIG
 antelope:
   oracle:
-    name: "myaccount"
+    name: "account"
     permission: "active"
-    key: "5jd3K..."
+    key: "5Kfr1..."
   rpc: "https://testnet.telos.caleos.io"
   hyperion: "https://testnet.telos.caleos.io"
 
@@ -16,6 +16,9 @@ evm:
 # SCRIPTS CONFIG
 scripts:
   listeners:
+    console_log: true
+    max_block_diff: 1000 # Restart stream if it hasn't received data since...
+    table_check_interval_ms: 30000 # Check table to make sure stream didn't miss anything
     delphi:
       account: "delphioracle"
       bridge:
@@ -23,7 +26,7 @@ scripts:
         eosio_evm_scope:
     rng:
       account: "rng.oracle"
-      linked_evm_address: "0x6c33bdd2622e59fd10b411ff8d8d8d4dc5caf6ce" # TODO: get it at runtime ??
+      evm_address: "0x6c33bdd2622e59fd10b411ff8d8d8d4dc5caf6ce"
       request:
         active: true
       bridge:
@@ -31,6 +34,7 @@ scripts:
         eosio_evm_scope: 35485
         evm_contract: "0x10b95d422F2C9714C331b1a14829886B0910F55d"
     gas:
+      account: "eosio.evm"
       bridge:
         active: true
         check_interval_ms: 3000
@@ -49,6 +53,6 @@ scripts:
               response:
                 format: "text"
         - file:
-            - filepath: "/var/www/myfile"
-              directory: "/var/www/"
-              remove: true
+            filepath: "/var/www/myfile"
+            directory: "/var/www/"
+            remove: true

@@ -10,11 +10,13 @@ class GasListener extends EVMListener {
         rpc,
         api,
         bridge,
+        hyperion,
+        config,
         evm_provider,
         evm_api,
         interval
     ) {
-        super(caller, rpc, api, bridge, evm_provider, evm_api);
+        super(caller, rpc, api, bridge, hyperion, config, evm_provider, evm_api);
         this.interval = interval;
     }
 

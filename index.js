@@ -55,6 +55,6 @@ if(listeners.gas.bridge.active){
         telosPrivateKeys: []
     });
     const evm_provider = new ethers.providers.JsonRpcProvider(config.evm.rpc);
-    const gasBridgeListener = new GasBridgeListener(caller, rpc, api, {"antelope_account": listeners.gas.bridge.account, "eth_account": listeners.gas.bridge.evm_contract }, config.antelope.hyperion, listeners, evm_provider, evm_api)
+    const gasBridgeListener = new GasBridgeListener(caller, rpc, api, {"antelope_account": listeners.gas.bridge.account, "eth_account": listeners.gas.bridge.evm_contract }, config.antelope.hyperion, listeners, evm_provider, evm_api, listeners.gas.bridge.check_interval_ms)
     gasBridgeListener.start();
 }
