@@ -1,4 +1,4 @@
-# Telos Oracles Listeners
+# Telos Oracle Scripts
 
 ## Requirement
 
