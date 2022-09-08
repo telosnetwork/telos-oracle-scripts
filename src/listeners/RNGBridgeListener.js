@@ -2,7 +2,7 @@ const ecc = require("eosjs-ecc");
 const HyperionStreamClient = require("@eosrio/hyperion-stream-client").default;
 const fetch = require("node-fetch");
 const { BigNumber, ethers, utils } = require("ethers");
-const Listener = require("./Listener");
+const Listener = require("../Listener");
 
 const ACCOUNT_STATE_TABLE = "accountstate";
 

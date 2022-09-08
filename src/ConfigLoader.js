@@ -53,8 +53,8 @@ class ConfigLoader {
         } catch (e) {
             this.errors.push('Could not load config: ' + e.message);
             this.print();
-            return false;
         }
+        return false;
     }
     print(){
         console.log("-------------------------------------------------");

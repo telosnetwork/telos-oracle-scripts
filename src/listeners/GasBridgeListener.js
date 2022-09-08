@@ -1,7 +1,7 @@
 const fetch = require("node-fetch");
 const {BigNumber, ethers } = require("ethers");
 const ABI = [{ "inputs": [], "name": "gasPrice", "outputs": [{ "internalType": "uint256",  "name": "", "type": "uint256"}],  "stateMutability": "view", "type": "function"}]
-const EVMListener = require("./EVMListener");
+const EVMListener = require("../EVMListener");
 const CONFIG_TABLE = "config";
 
 class GasListener extends EVMListener {

@@ -1,7 +1,7 @@
 const ecc = require("eosjs-ecc");
 const HyperionStreamClient = require("@eosrio/hyperion-stream-client").default;
 const fetch = require("node-fetch");
-const Listener = require("./Listener");
+const Listener = require("../Listener");
 require('dotenv').config();
 
 const REQUESTS_TABLE = "rngrequests";
