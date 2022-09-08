@@ -22,15 +22,15 @@ cp config.yml.sample config.yml
 vi config.yml 
 ```
 
-### Antelope
+### > Antelope
 
-### EVM
+### > EVM
 
-### Listeners
+### > Listeners
 
-### Updaters
+### > Updaters
 
-#### Delphi Updater
+####   Delphi Updater
 
 This updater supports 2 methods: `http` and `file`. Follow the steps below to configure them
 
