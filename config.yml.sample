@@ -1,0 +1,54 @@
+# ANTELOPE GENRAL CONFIG
+antelope:
+  oracle:
+    name: "myaccount"
+    permission: "active"
+    key: "5jd3K..."
+  rpc: "https://testnet.telos.caleos.io"
+  hyperion: "https://testnet.telos.caleos.io"
+
+# EVM GENRAL CONFIG
+evm:
+  api: "https://testnet.telos.net"
+  rpc: "https://testnet.telos.net/evm"
+  network: 41
+
+# SCRIPTS CONFIG
+scripts:
+  listeners:
+    delphi:
+      account: "delphioracle"
+      bridge:
+        active: true
+        eosio_evm_scope:
+    rng:
+      account: "rng.oracle"
+      linked_evm_address: "0x6c33bdd2622e59fd10b411ff8d8d8d4dc5caf6ce" # TODO: get it at runtime ??
+      request:
+        active: true
+      bridge:
+        active: true
+        eosio_evm_scope: 35485
+        evm_contract: "0x10b95d422F2C9714C331b1a14829886B0910F55d"
+    gas:
+      bridge:
+        active: true
+        check_interval_ms: 3000
+        evm_contract: "0x648ac5a8c4E1ae5A93cd5BeDF143B095B8c49a2a"
+        account: "gasbridge"
+  updaters:
+    delphi:
+      active: true
+      methods:
+        - http:
+            - url: ""
+              response:
+                format: "JSON"
+                multiple: true
+            - url: ""
+              response:
+                format: "text"
+        - file:
+            - filepath: "/var/www/myfile"
+              directory: "/var/www/"
+              remove: true
