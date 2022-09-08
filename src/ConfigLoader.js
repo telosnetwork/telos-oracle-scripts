@@ -4,8 +4,45 @@ const fs   = require('fs');
 class ConfigLoader {
     constructor(){
         this.errors = [];
-        this.listeners = [{ name: 'delphi', required: []}, { name: 'rng', required: []}, { name: 'gas', required: []}];
-        this.updaters = [ { name: 'delphi', required: []}];
+        this.listeners = [
+            {
+                name: 'delphi',
+                children: [
+                    {
+                        name: 'account'
+                    },
+                    {
+                        name: 'bridge',
+                        children: ["eosio_evm_scope", "account"]
+                    }
+                ]
+            },
+            {
+                name: 'rng',
+                children: [
+                    {name: 'account'},
+                    {name: 'bridge', children: ["eosio_evm_scope", "account", "linked_evm_address", "evm_contract"]},
+                    {name: 'request', children: []}
+                ]
+            },
+            {
+                name: 'gas',
+                children: [
+                    {name: 'account' },
+                    {name: 'bridge', children: ["account", "check_interval_ms"] }
+                ]
+            }
+        ];
+        this.updaters = [
+            {
+                name: 'delphi',
+                children: [
+                    {name: 'methods'},
+                    {name: 'account'},
+                    {name: 'check_interval_ms'}
+                ]
+            }
+        ];
     }
     load(){
         try {
@@ -15,6 +52,7 @@ class ConfigLoader {
             }
         } catch (e) {
             this.errors.push('Could not load config: ' + e.message);
+            this.print();
             return false;
         }
     }
@@ -40,11 +78,34 @@ class ConfigLoader {
             for(var i = 0; i < this.listeners.length; i++){
                 if(!config.scripts.listeners[this.listeners[i].name]){
                     this.errors.push('Missing '+ this.listeners[i].name +' listener configuration.');
+                } else if(this.listeners[i].children) {
+                    for(var k = 0; k < this.listeners[i].children.length; k++) {
+                        var config_element = config.scripts.listeners[this.listeners[i].name][this.listeners[i].children[k].name];
+                        var element = this.listeners[i].children[k];
+                        if (!config_element)
+                        {
+                            this.errors.push('Missing '+ element.name +' in '+ this.listeners[i].name +' listener configuration.');
+                        } else if(element.children) {
+                            for(var c = 0; c < element.children.length; c++) {
+                                if (!config_element[element.children[c]])
+                                {
+                                    this.errors.push('Missing '+ element.children[c] +' in '+ this.listeners[i].name +' > '+ element.name +' listener configuration.');
+                                }
+                            }
+                        }
+                    }
                 }
             }
             for(var i = 0; i < this.updaters.length; i++){
                 if(!config.scripts.updaters[this.updaters[i].name]){
                     this.errors.push('Missing '+ this.updaters[i].name +' updater configuration.');
+                } else
+                {
+                    for(var k = 0; k < this.updaters[i].children.length; k++) {
+                        if (!config.scripts.updaters[this.updaters[i].name][this.updaters[i].children[k].name]){
+                            this.errors.push('Missing '+ this.updaters[i].children[k].name +' in '+ this.updaters[i].name +' updater configuration.');
+                        }
+                    }
                 }
             }
         }
