@@ -45,12 +45,12 @@ if(updaters.delphi.active){
 }
 // RNG Bridge
 if(listeners.rng.bridge.active){
-    const rngBridgeListener = new RNGBridgeListener(listeners.rng.account, caller, rpc, api, {"antelope_account": listeners.rng.account, "eosio_evm_scope" : listeners.rng.bridge.eosio_evm_scope }, config.antelope.hyperion, listeners)
+    const rngBridgeListener = new RNGBridgeListener(listeners.rng.account, caller, rpc, api, {"antelope_account": listeners.rng.bridge.account, "eosio_evm_scope" : listeners.rng.bridge.eosio_evm_scope }, config.antelope.hyperion, listeners)
     rngBridgeListener.start();
 }
 // RNG Requests
 if(listeners.rng.request.active){
-    const rngRequestListener = new RNGRequestListener(listeners.rng.account, caller, rpc, api, {"antelope_account": listeners.rng.account, "eosio_evm_scope" : listeners.rng.bridge.eosio_evm_scope }, config.antelope.hyperion, listeners)
+    const rngRequestListener = new RNGRequestListener(listeners.rng.account, caller, rpc, api, {"antelope_account": listeners.rng.bridge.account, "eosio_evm_scope" : listeners.rng.bridge.eosio_evm_scope }, config.antelope.hyperion, listeners)
     rngRequestListener.start();
 }
 // Gas Bridge

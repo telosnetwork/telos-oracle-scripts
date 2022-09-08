@@ -6,31 +6,45 @@ const Listener = require("./Listener");
 
 const ACCOUNT_STATE_TABLE = "accountstate";
 
-class RNGListener extends Listener {
+class RNGBridgeListener extends Listener {
     async start() {
-        try {
-            // Get the scope for our EVM contrat in Mandel eosio.evm contract
-            await this.startStream();
-        } catch (e) {
-
-        }
-
-        // await this.doTableCheck();
-        // TODO: maybe a 15 second setInterval against doTableCheck?  In case stream takes a crap?
-        // Or: find a way to check stream health at set interval (better), if failed then doTableCheck & launch stream back
-        // Or: disconnect and connect back every X minutes
+        await this.startStream();
+        await this.doTableCheck();
+        setInterval(async () => {
+            await this.doTableCheck();
+        }, this.check_interval_ms)
     }
 
     async doTableCheck() {
-        this.log(`Doing table check...`);
+        this.log(`Doing table check for RNG Oracle Bridge...`);
         const results = await this.rpc.get_table_rows({
-            code:  "rng.oracle",
+            code:  "eosio.evm",
             table: ACCOUNT_STATE_TABLE,
             scope: this.bridge.eosio_evm_scope,
             limit: 1000,
         });
 
-        results.rows.forEach((row) => this.signRow(row));
+        results.rows.forEach(async (row) => {
+            if(this.counter == 0){
+                this.api.transact({
+                    actions: [{
+                        account: this.bridge.antelope_account,
+                        name: 'reqnotify',
+                        authorization: [{ actor: this.caller.name, permission: this.caller.permission }],
+                        data: {},
+                    }]
+                }, {
+                    blocksBehind: 3,
+                    expireSeconds: 90,
+                }).then(result => {
+                    this.log('\nCalled reqnotify()');
+                }).catch(e => {
+                    this.log('\nCaught exception: ' + e);
+                });
+            }
+            this.counter++;
+            this.counter = (this.counter == 11) ? 0 : this.counter;
+        });
         this.log(`Done doing table check!`);
     }
     async startStream() {
@@ -98,4 +112,4 @@ class RNGListener extends Listener {
     }
 }
 
-module.exports = RNGListener;
+module.exports = RNGBridgeListener;

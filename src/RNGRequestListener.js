@@ -30,9 +30,9 @@ class RNGRequestListener extends Listener {
         let headBlock = getInfo.head_block_num;
         this.streamClient.onConnect = () => {
             this.streamClient.streamDeltas({
-                code: "rng.oracle",
+                code: this.oracle,
                 table: REQUESTS_TABLE,
-                scope: "rng.oracle",
+                scope: this.oracle,
                 payer: "",
                 start_from: headBlock,
                 read_until: 0,
@@ -46,7 +46,7 @@ class RNGRequestListener extends Listener {
         };
 
         this.streamClient.connect(() => {
-            this.log("Connected to Hyperion Stream for RNG Oracle!");
+            this.log("Connected to Hyperion Stream for RNG Oracle !");
         });
 
         // check lastReceivedBlock isn't too far from HEAD, else stop stream & start again
@@ -63,10 +63,10 @@ class RNGRequestListener extends Listener {
     }
 
     async doTableCheck() {
-        this.log(`Doing table check for RNG Requests...`);
+        this.log(`Doing table check for RNG Oracle Requests...`);
         const results = await this.rpc.get_table_rows({
-            code: "rng.oracle",
-            scope: "rng.oracle",
+            code: this.oracle,
+            scope: this.oracle,
             table: REQUESTS_TABLE,
             limit: 1000,
         });
@@ -92,7 +92,7 @@ class RNGRequestListener extends Listener {
                 {
                     actions: [
                         {
-                            account: "rng.oracle",
+                            account: this.oracle,
                             name: "submitrand",
                             authorization: [
                                 {
