@@ -3,6 +3,7 @@ const Listener = require("./Listener");
 class EVMListener extends Listener {
 
     constructor(
+        oracle,
         caller,
         rpc,
         api,
@@ -12,7 +13,7 @@ class EVMListener extends Listener {
         evm_provider,
         evm_api
     ) {
-        super(caller, rpc, api, bridge, hyperion, config);
+        super(oracle, caller, rpc, api, bridge, hyperion, config);
         this.evm_api = evm_api;
         this.evm_provider = evm_provider;
     }

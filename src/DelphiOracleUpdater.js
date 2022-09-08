@@ -1,6 +1,5 @@
 const Eos = require('eosjs');
-const dotenv = require('dotenv');
-const request = require('request');
+const fetch = require('node-fetch');
 const fs = require('fs');
 
 const tlosUrl = "https://min-api.cryptocompare.com/data/price?fsym=TLOS&tsyms=USD";
@@ -9,44 +8,51 @@ const btcUrl = "https://min-api.cryptocompare.com/data/price?fsym=BTC&tsyms=USD,
 const btccnyUrl = "https://blockchain.info/ticker";
 
 class DelphiOracleUpdater {
-    __constructor(oracle, caller, interval, method, params){
+    constructor(oracle, caller, interval, methods){
         this.interval = interval;
         this.caller = caller;
         this.oracle = oracle;
-        this.method = method;
-        this.params = params;
+        this.methods = methods;
+        this.quotes = [];
+    }
+    start(){
+        this.quotes = [];
+        for(var i = 0; i < this.methods.http.length; i++){
+            getURL(this.methods.http[i])
+        }
+        this.update(quotes);
     }
     readFile(){
         if(this.params.remove){
             fs.unlink(this.params.filepath, () => {});
         }
-        this.update(quotes);
     }
-    readURLs(){
-        var quotes = [];
-        for(var i = 0; i < this.params.services; i++){
-            request.get(services[i].url, function (err, res, eosRes){
-                if(services[i].response_format == "json"){
-                    response = JSON.parse(eosRes);
+    getURL(services){
+        for(var i = 0; i < services.length; i++){
+            fetch(services[i].url).then((response) => {
+                if(services[i].response.format == "json"){
+                    let data = JSON.parse(response);
                 } else {
                     console.log("Response format not set")
                 }
-                if(services[i].response_multiple == false){
-                    response = [response];
+                if(services[i].response.multiple == false){
+                    data = [data];
                 }
-                for(var i = 0; i < response.length;i++){
-                    const value = response[i][services[i].property];
-                    quotes.push({"value": parseInt(Math.round(value * 10000)), services[i].pair});
+                for(var i = 0; i < data.length;i++){
+                    const value = data[i][services[i].response.property];
+                    this.quotes.push({"value": parseInt(Math.round(value * 10000)), "pair": services[i].pair});
                 }
             });
-        });
-        this.update(quotes);
+        }
     }
-    update(quotes){
+    update(){
+        if(this.quotes.length === 0){
+            return false;
+        }
         eos.contract(this.oracle).then((contract) => {
             contract.write({
                 owner: this.caller.name,
-                quotes: quotes
+                quotes: this.quotes
             },
             {
                 scope: this.oracle,

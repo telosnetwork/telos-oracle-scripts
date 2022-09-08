@@ -6,6 +6,7 @@ const CONFIG_TABLE = "config";
 
 class GasListener extends EVMListener {
     constructor(
+        oracle,
         caller,
         rpc,
         api,
@@ -16,7 +17,7 @@ class GasListener extends EVMListener {
         evm_api,
         interval
     ) {
-        super(caller, rpc, api, bridge, hyperion, config, evm_provider, evm_api);
+        super(oracle, caller, rpc, api, bridge, hyperion, config, evm_provider, evm_api);
         this.interval = interval;
     }
 

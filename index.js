@@ -1,21 +1,26 @@
 const RNGBridgeListener = require('./src/RNGBridgeListener');
 const RNGRequestListener = require('./src/RNGRequestListener');
 const DelphiBridgeListener = require('./src/DelphiBridgeListener');
+const DelphiOracleUpdater = require('./src/DelphiOracleUpdater');
 const GasBridgeListener = require('./src/GasBridgeListener');
+const ConfigLoader = require('./src/ConfigLoader');
 const eosjs = require('eosjs');
 const JsSignatureProvider = require('eosjs/dist/eosjs-jssig').JsSignatureProvider;
 const JsonRpc = eosjs.JsonRpc;
 const Api = eosjs.Api;
 const fetch = require('node-fetch');
-const fs   = require('fs');
 const util = require('util');
 const ethers = require("ethers");
 const  { TelosEvmApi } = require("@telosnetwork/telosevm-js");
-const yaml = require('js-yaml');
 
 // Read config
-const config = yaml.load(fs.readFileSync(__dirname + '/config.yml', 'utf8'));
+const configLoader = new ConfigLoader("config.yml");
+const config = configLoader.load();
+if(!config){
+    throw('Failed to load config');
+}
 const listeners = config.scripts.listeners;
+const updaters = config.scripts.updaters;
 
 // Instantiate services
 const signatureProvider = new JsSignatureProvider([config.antelope.oracle.key]);
@@ -31,17 +36,21 @@ const caller = {"name": config.antelope.oracle.name, "permission": config.antelo
 
 // Delphi Bridge
 if(listeners.delphi.bridge.active){
-    const delphiBridgeListener = new DelphiBridgeListener(caller, rpc, api, {"antelope_account": listeners.delphi.account, "eosio_evm_scope" : listeners.delphi.bridge.eosio_evm_scope }, config.antelope.hyperion, listeners)
+    const delphiBridgeListener = new DelphiBridgeListener(listeners.delphi.account, caller, rpc, api, {"antelope_account": listeners.delphi.bridge.account, "eosio_evm_scope" : listeners.delphi.bridge.eosio_evm_scope }, config.antelope.hyperion, listeners)
     delphiBridgeListener.start();
+}
+// Delphi Updater
+if(updaters.delphi.active){
+    const delphiOracleUpdater = new DelphiOracleUpdater(updaters.delphi.account, caller, updaters.delphi.check_interval_ms, updaters.delphi.methods)
 }
 // RNG Bridge
 if(listeners.rng.bridge.active){
-    const rngBridgeListener = new RNGBridgeListener(caller, rpc, api, {"antelope_account": listeners.rng.account, "eosio_evm_scope" : listeners.rng.bridge.eosio_evm_scope }, config.antelope.hyperion, listeners)
+    const rngBridgeListener = new RNGBridgeListener(listeners.rng.account, caller, rpc, api, {"antelope_account": listeners.rng.account, "eosio_evm_scope" : listeners.rng.bridge.eosio_evm_scope }, config.antelope.hyperion, listeners)
     rngBridgeListener.start();
 }
 // RNG Requests
 if(listeners.rng.request.active){
-    const rngRequestListener = new RNGRequestListener(caller, rpc, api, {"antelope_account": listeners.rng.account, "eosio_evm_scope" : listeners.rng.bridge.eosio_evm_scope }, config.antelope.hyperion, listeners)
+    const rngRequestListener = new RNGRequestListener(listeners.rng.account, caller, rpc, api, {"antelope_account": listeners.rng.account, "eosio_evm_scope" : listeners.rng.bridge.eosio_evm_scope }, config.antelope.hyperion, listeners)
     rngRequestListener.start();
 }
 // Gas Bridge
@@ -55,6 +64,6 @@ if(listeners.gas.bridge.active){
         telosPrivateKeys: []
     });
     const evm_provider = new ethers.providers.JsonRpcProvider(config.evm.rpc);
-    const gasBridgeListener = new GasBridgeListener(caller, rpc, api, {"antelope_account": listeners.gas.bridge.account, "eth_account": listeners.gas.bridge.evm_contract }, config.antelope.hyperion, listeners, evm_provider, evm_api, listeners.gas.bridge.check_interval_ms)
+    const gasBridgeListener = new GasBridgeListener(listeners.gas.account, caller, rpc, api, {"antelope_account": listeners.gas.bridge.account, "eth_account": listeners.gas.bridge.evm_contract }, config.antelope.hyperion, listeners, evm_provider, evm_api, listeners.gas.bridge.check_interval_ms)
     gasBridgeListener.start();
 }

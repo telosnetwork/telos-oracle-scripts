@@ -15,12 +15,12 @@ class RNGRequestListener extends Listener {
         await this.doTableCheck();
         setInterval(async () => {
             await this.doTableCheck();
-        }, INTERVAL_MS)
+        }, this.check_interval_ms)
     }
 
     async startStream() {
         this.streamClient = new HyperionStreamClient(
-            process.env.HYPERION_ENDPOINT,
+            this.hyperion,
             {
                 async: true,
                 fetch: fetch,
@@ -53,17 +53,17 @@ class RNGRequestListener extends Listener {
         let interval = setInterval(async () => {
             if(typeof this.streamClient.lastReceivedBlock !== "undefined" && this.streamClient.lastReceivedBlock !== 0){
                 let getInfo = await this.rpc.get_info();
-                if(MAX_BLOCK_DIFF < ( getInfo.head_block_num - this.streamClient.lastReceivedBlock)){
+                if(this.max_block_diff < ( getInfo.head_block_num - this.streamClient.lastReceivedBlock)){
                     clearInterval(interval);
                     this.streamClient.disconnect();
                     await this.startStream();
                 }
             }
-        }, INTERVAL_MS)
+        }, this.check_interval_ms)
     }
 
     async doTableCheck() {
-        this.log(`Doing table check...`);
+        this.log(`Doing table check for RNG Requests...`);
         const results = await this.rpc.get_table_rows({
             code: "rng.oracle",
             scope: "rng.oracle",

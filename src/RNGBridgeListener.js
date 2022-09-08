@@ -67,7 +67,7 @@ class RNGListener extends Listener {
                         }]
                     }, {
                         blocksBehind: 3,
-                        expireSeconds: 30,
+                        expireSeconds: 90,
                     }).then(result => {
                         this.log('\nCalled reqnotify()');
                     }).catch(e => {
