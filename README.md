@@ -28,6 +28,14 @@ vi config.yml
 
 ### > Listeners
 
+####   Delphi Bridge
+
+####   RNG Bridge
+
+####   RNG Requests
+
+####   Gas Bridge
+
 ### > Updaters
 
 ####   Delphi Updater
