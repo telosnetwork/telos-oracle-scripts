@@ -28,13 +28,13 @@ vi config.yml
 
 ### > Listeners
 
-####   Delphi Bridge
+####   Delphi Bridge Listener
 
-####   RNG Bridge
+####   RNG Bridge Listener
 
-####   RNG Requests
+####   RNG Oracle Request Listener
 
-####   Gas Bridge
+####   Gas Bridge Listener
 
 ### > Updaters
 
