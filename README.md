@@ -22,6 +22,8 @@ cp config.yml.sample config.yml
 vi config.yml 
 ```
 
+### Listeners
+
 ### Updaters
 
 #### Delphi Updater
