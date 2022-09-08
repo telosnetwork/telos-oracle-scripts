@@ -1,5 +1,11 @@
 # Telos Oracle Scripts
 
+This repository contains various scripts for BPs and other Telos actors to help run the Telos Oracles and their respective bridges.
+
+You can find our oracle repositories here: [Delphi Oracle](https://github.com/telosnetwork/delphioracle), [RNG Oracle](https://github.com/telosnetwork/telos-oracle-rng)
+
+And their bridge repositories here: [RNG Oracle Bridge](https://github.com/telosnetwork/rng-oracle-bridge), [Delphi Oracle Bridge](https://github.com/telosnetwork/delphi-oracle-bridge), [Gas Bridge](https://github.com/telosnetwork/gas-oracle-bridge)
+
 ## Requirement
 
 This repository requires NodeJS 14+, NPM and PM2
