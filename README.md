@@ -48,8 +48,14 @@ vi config.yml
 
 This updater supports 2 methods: `http` and `file`. Follow the steps below to configure them
 
-#####   HTTP
+##### http
 
+```
+cp config.yml.sample config.yml
+vi config.yml 
+```
+
+##### file
 ```
 cp config.yml.sample config.yml
 vi config.yml 
