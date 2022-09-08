@@ -22,6 +22,10 @@ cp config.yml.sample config.yml
 vi config.yml 
 ```
 
+### Antelope
+
+### EVM
+
 ### Listeners
 
 ### Updaters
