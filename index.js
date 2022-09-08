@@ -1,8 +1,5 @@
-const RNGBridgeListener = require('./src/listeners/RNGBridgeListener');
-const RNGRequestListener = require('./src/listeners/RNGRequestListener');
-const DelphiBridgeListener = require('./src/listeners/DelphiBridgeListener');
-const DelphiOracleUpdater = require('./src/updaters/DelphiOracleUpdater');
-const GasBridgeListener = require('./src/listeners/GasBridgeListener');
+const { RNGRequestListener, RNGBridgeListener, DelphiBridgeListener, GasBridgeListener }  = require('./src/listeners');
+const { DelphiOracleUpdater }  = require('./src/updaters');
 const ConfigLoader = require('./src/ConfigLoader');
 const eosjs = require('eosjs');
 const JsSignatureProvider = require('eosjs/dist/eosjs-jssig').JsSignatureProvider;
@@ -17,12 +14,13 @@ const  { TelosEvmApi } = require("@telosnetwork/telosevm-js");
 const configLoader = new ConfigLoader("config.yml");
 const config = configLoader.load();
 if(!config){
-    throw('Failed to load config');
+    throw('Stopping. Failed to load config. See above');
 }
+
+// Instantiate services & variables
 const listeners = config.scripts.listeners;
 const updaters = config.scripts.updaters;
-
-// Instantiate services
+const caller = {"name": config.antelope.oracle.name, "permission": config.antelope.oracle.permission, "key":  config.antelope.oracle.key};
 const signatureProvider = new JsSignatureProvider([config.antelope.oracle.key]);
 const rpc = new JsonRpc(config.antelope.rpc, { fetch });
 const api = new Api({
@@ -32,7 +30,6 @@ const api = new Api({
     textEncoder: new util.TextEncoder()
 });
 
-const caller = {"name": config.antelope.oracle.name, "permission": config.antelope.oracle.permission, "key":  config.antelope.oracle.key};
 
 // Delphi Bridge
 if(listeners.delphi.bridge.active){

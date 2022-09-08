@@ -7,7 +7,7 @@ require('dotenv').config();
 const MAX_BLOCK_DIFF = parseInt(process.env.MAX_BLOCK_DIFF);
 const INTERVAL_MS = parseInt(process.env.TABLE_CHECK_INTERVAL_MS);
 
-class DelphiListener extends Listener {
+class DelphiBridgeListener extends Listener {
 
   async start() {
     await this.startStream();
@@ -99,4 +99,4 @@ class DelphiListener extends Listener {
 
 }
 
-module.exports = DelphiListener;
+module.exports = DelphiBridgeListener;
