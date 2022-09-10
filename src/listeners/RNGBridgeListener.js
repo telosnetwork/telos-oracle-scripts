@@ -7,6 +7,21 @@ const Listener = require("../Listener");
 const ACCOUNT_STATE_TABLE = "accountstate";
 
 class RNGBridgeListener extends Listener {
+
+    constructor(
+        oracle,
+        rpc,
+        api,
+        config,
+        bridge
+    ){
+        super(oracle, rpc, api, config, bridge);
+        let conf = config.scripts.listeners.rng.bridge;
+        if(conf.check_interval_ms > 0){
+            this.check_interval_ms = conf.check_interval_ms; // Override base interval
+        }
+    }
+
     async start() {
         await this.startStream();
         await this.doTableCheck();
@@ -26,6 +41,7 @@ class RNGBridgeListener extends Listener {
         this.counter = 0;
         results.rows.forEach(async (row) => {
             if(this.counter == 11){
+                // TODO: see if request exists before calling ? (ie: no oracles are answering)
                 this.api.transact({
                     actions: [{
                         account: this.bridge.antelope_account,
@@ -41,11 +57,10 @@ class RNGBridgeListener extends Listener {
                 }).catch(e => {
                     this.log('\nCaught exception: ' + e);
                 });
-                return;
             }
             this.counter++;
         });
-        this.log('Done doing table check!');
+        this.log('Done doing table check for RNG Oracle Bridge !');
     }
     async startStream() {
         let getInfo = await this.rpc.get_info();

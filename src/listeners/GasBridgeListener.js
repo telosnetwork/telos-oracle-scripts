@@ -7,25 +7,25 @@ const CONFIG_TABLE = "config";
 class GasListener extends EVMListener {
     constructor(
         oracle,
-        caller,
         rpc,
         api,
-        bridge,
-        hyperion,
-        config,
         evm_provider,
         evm_api,
-        interval
+        config,
+        bridge,
     ) {
-        super(oracle, caller, rpc, api, bridge, hyperion, config, evm_provider, evm_api);
-        this.interval = interval;
+        super(oracle, rpc, api, evm_provider, evm_api, config, bridge);
+        let conf = config.scripts.listeners.gas.bridge;
+        if(conf.check_interval_ms){
+            this.check_interval_ms = conf.check_interval_ms; // Override interval for gas listeners
+        }
     }
 
     async start() {
         let ctx = this;
         setInterval(async function () {
             await ctx.doCheck();
-        }, this.interval)
+        }, this.check_interval_ms)
     }
 
     async doCheck() {
@@ -49,7 +49,7 @@ class GasListener extends EVMListener {
         }
 
         if(gas_price.eq(evm_contract_gas_price) === false){
-            this.log(`Updating price...`);
+            this.log(`Updating gas price...`);
             this.api.transact({
                 actions: [{
                     account: this.bridge.antelope_account,
@@ -61,7 +61,7 @@ class GasListener extends EVMListener {
                 blocksBehind: 3,
                 expireSeconds: 90,
             }).then(result => {
-                this.log(`Updated price !`);
+                this.log(`Updated gas price !`);
             }).catch(e => {
                 this.log('Failed, caught exception: ' + e);
             });

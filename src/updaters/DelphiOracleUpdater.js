@@ -2,52 +2,37 @@ const Eos = require('eosjs');
 const fetch = require('node-fetch');
 const fs = require('fs');
 
-const tlosUrl = "https://min-api.cryptocompare.com/data/price?fsym=TLOS&tsyms=USD";
-const eosUrl = "https://min-api.cryptocompare.com/data/price?fsym=EOS&tsyms=BTC,USD";
-const btcUrl = "https://min-api.cryptocompare.com/data/price?fsym=BTC&tsyms=USD,CAD";
-const btccnyUrl = "https://blockchain.info/ticker";
-
 class DelphiOracleUpdater {
-    constructor(oracle, caller, interval, methods){
-        this.interval = interval;
-        this.caller = caller;
+    constructor(oracle, config){
+        this.update_interval_ms = config.scripts.updaters.delphi.update_interval_ms;
+        this.caller = {"name": config.antelope.oracle.name, "permission": config.antelope.oracle.permission, "private_key":  config.antelope.oracle.private_key, "signing_key":  config.antelope.oracle.signing_key};
         this.oracle = oracle;
-        this.methods = methods;
+        this.services = config.scripts.updaters.delphi.services;
         this.quotes = [];
     }
-    start(){
+    resetQuotes() {
         this.quotes = [];
-        for(var i = 0; i < this.methods.http.length; i++){
-            getURL(this.methods.http[i])
-        }
-        this.update(quotes);
     }
-    readFile(){
-        if(this.params.remove){
-            fs.unlink(this.params.filepath, () => {});
-        }
+    addQuote(quote) {
+        this.quotes.push(quote);
     }
-    getURL(services){
-        for(var i = 0; i < services.length; i++){
-            fetch(services[i].url).then((response) => {
-                if(services[i].response.format == "json"){
-                    let data = JSON.parse(response);
-                } else {
-                    console.log("Response format not set")
-                }
-                if(services[i].response.multiple == false){
-                    data = [data];
-                }
-                for(var i = 0; i < data.length;i++){
-                    const value = data[i][services[i].response.property];
-                    this.quotes.push({"value": parseInt(Math.round(value * 10000)), "pair": services[i].pair});
-                }
-            });
+    start(callbackSucess, callbackError){
+        if(this.services.length === 0){
+            return;
         }
+        let interval = setInterval(() => {
+            for(var i = 0; i < this.services.length; i++){
+                fetch(this.services[i].url).then((response) => {
+                    callbackSuccess(this, this.services[i].id, response);
+                }).catch((e) => {
+                    callbackError(e);
+                });
+            }
+        }, this.update_interval_ms);
     }
-    update(){
-        if(this.quotes.length === 0){
-            return false;
+    send(callbackSucess, callbackError){
+        if(this.quotes.length === 0 || !this.caller.name){
+            return;
         }
         eos.contract(this.oracle).then((contract) => {
             contract.write({
@@ -59,13 +44,14 @@ class DelphiOracleUpdater {
                 authorization: [`${this.caller.name}@${this.caller.permission || 'active'}`]
             })
             .then(results=>{
-                console.log("results:", results);
+                this.quotes = [];
+                callbackSucess(results);
             })
             .catch(error=>{
-                console.log("error:", error);
+                callbackError(error);
             });
         }).catch(error=>{
-           console.log("error:", error);
+            callbackError(error);
         });
     }
 }

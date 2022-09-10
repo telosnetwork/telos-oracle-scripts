@@ -2,12 +2,21 @@ const ecc = require("eosjs-ecc");
 const HyperionStreamClient = require("@eosrio/hyperion-stream-client").default;
 const fetch = require("node-fetch");
 const Listener = require("../Listener");
-require('dotenv').config();
-
-const MAX_BLOCK_DIFF = parseInt(process.env.MAX_BLOCK_DIFF);
-const INTERVAL_MS = parseInt(process.env.TABLE_CHECK_INTERVAL_MS);
 
 class DelphiBridgeListener extends Listener {
+  constructor(
+      oracle,
+      rpc,
+      api,
+      config,
+      bridge
+  ){
+    super(oracle, rpc, api, config, bridge);
+    let conf = config.scripts.listeners.delphi.bridge;
+    if(conf.check_interval_ms){
+      this.check_interval_ms = conf.check_interval_ms; // Override base interval
+    }
+  }
 
   async start() {
     await this.startStream();
@@ -95,13 +104,12 @@ class DelphiBridgeListener extends Listener {
     });
     this.counter = 0;
     results.rows.forEach(async(row) => {
-      if(this.counter == 0) { // Counter to get only one call per new request (as listener gets called foreach row)
+      if(this.counter == 11) { // Counter to get only new request
         await this.notify(data);
       }
       this.counter++;
-      this.counter = (this.counter == 11) ? 0 : this.counter;
     });
-    this.log(`Done doing table check!`);
+    this.log(`Done doing table check for Delphi Oracle Bridge !`);
   }
 
 }

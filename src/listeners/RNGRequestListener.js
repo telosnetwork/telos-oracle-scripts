@@ -2,13 +2,25 @@ const ecc = require("eosjs-ecc");
 const HyperionStreamClient = require("@eosrio/hyperion-stream-client").default;
 const fetch = require("node-fetch");
 const Listener = require("../Listener");
-require('dotenv').config();
 
 const REQUESTS_TABLE = "rngrequests";
-const MAX_BLOCK_DIFF = parseInt(process.env.MAX_BLOCK_DIFF);
-const INTERVAL_MS = parseInt(process.env.TABLE_CHECK_INTERVAL_MS);
 
 class RNGRequestListener extends Listener {
+
+    constructor(
+        oracle,
+        rpc,
+        api,
+        config,
+        bridge
+    ){
+        super(oracle, rpc, api, config, bridge);
+        let conf = config.scripts.listeners.rng.request;
+        if(conf.check_interval_ms){
+            this.check_interval_ms = conf.check_interval_ms; // Override base interval
+        }
+        this.processing = [];
+    }
 
     async start() {
         await this.startStream();
@@ -19,6 +31,9 @@ class RNGRequestListener extends Listener {
     }
 
     async startStream() {
+        if (typeof this.caller.signing_key === "undefined" ){
+            this.log('/!\\ Signing key is undefined. Script will not try to sign.')
+        }
         let getInfo = await this.rpc.get_info();
         let headBlock = getInfo.head_block_num;
         this.streamClient = new HyperionStreamClient(
@@ -71,24 +86,32 @@ class RNGRequestListener extends Listener {
             scope: this.oracle,
             table: REQUESTS_TABLE,
             limit: 1000,
+            reverse: true
         });
 
-        let signed = 0;
-
-        results.rows.forEach(async (row) => {
-            if(!row.sig2 || row.sig2 === ''){
-                signed = (await this.signRow(row)) ? signed + 1 : signed;
+        let count = 0;
+        await results.rows.forEach(async (row) => {
+            if(!row.sig2 || row.sig2 === '' ||  row.oracle2 === "eosio.null"){
+                count++;
+                await this.signRow(row);
+                if(count > 25){
+                    return ;
+                }
             }
         });
-
-        this.log(`Done doing table check ! Signed ${signed} rows`);
+        console.log(this.processing)
+        this.log(`Done doing table check for RNG Oracle Requests ! `);
     }
-
+    removeProcessingRequest(request_id){
+        const index = this.processing.indexOf(request_id);
+        if (index > -1) { this.processing.splice(index, 1);  }
+    }
     async signRow(row) {
+        if (this.processing.includes(row.request_id) || typeof this.caller.signing_key === "undefined" || row.oracle1 === this.caller.name || row.oracle2 === this.caller.name){
+            return false;
+        }
+        this.processing.push(row.request_id);
         this.log(`Signing request_id: ${row.request_id}...`)
-        if (row.oracle1 == this.caller.name || row.oracle2 == this.caller.name)
-            return;
-
         try {
             const result = await this.api.transact(
                 {
@@ -105,7 +128,7 @@ class RNGRequestListener extends Listener {
                             data: {
                                 request_id: row.request_id,
                                 oracle_name: this.caller.name,
-                                sig: ecc.signHash(row.digest, this.caller.key),
+                                sig: ecc.signHash(row.digest, this.caller.signing_key),
                             },
                         },
                     ],
@@ -113,12 +136,13 @@ class RNGRequestListener extends Listener {
                 { blocksBehind: 10, expireSeconds: 60 }
             );
             this.log(`Signed request ${row.request_id}`);
-            return true;
+            this.removeProcessingRequest(row.request_id);
+            return result;
         } catch (e) {
             console.error(`Submitting signature failed: ${e}`);
+            this.removeProcessingRequest(row.request_id);
             return false;
         }
-        return true;
     }
 }
 

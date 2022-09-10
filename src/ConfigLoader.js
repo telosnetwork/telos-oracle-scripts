@@ -37,9 +37,9 @@ class ConfigLoader {
             {
                 name: 'delphi',
                 children: [
-                    {name: 'methods'},
+                    {name: 'services'},
                     {name: 'account'},
-                    {name: 'check_interval_ms'}
+                    {name: 'update_interval_ms'}
                 ]
             }
         ];
