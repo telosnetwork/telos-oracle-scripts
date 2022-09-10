@@ -15,7 +15,7 @@ class RNGRequestListener extends Listener {
         bridge
     ){
         super(oracle, rpc, api, config, bridge);
-        let conf = config.scripts.listeners.rng.request;
+        const conf = config.scripts.listeners.rng.request;
         if(conf.check_interval_ms){
             this.check_interval_ms = conf.check_interval_ms; // Override base interval
         }
@@ -89,17 +89,11 @@ class RNGRequestListener extends Listener {
             reverse: true
         });
 
-        let count = 0;
         await results.rows.forEach(async (row) => {
             if(!row.sig2 || row.sig2 === '' ||  row.oracle2 === "eosio.null"){
-                count++;
                 await this.signRow(row);
-                if(count > 25){
-                    return ;
-                }
             }
         });
-        console.log(this.processing)
         this.log(`Done doing table check for RNG Oracle Requests ! `);
     }
     removeProcessingRequest(request_id){

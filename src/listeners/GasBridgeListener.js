@@ -2,7 +2,6 @@ const fetch = require("node-fetch");
 const {BigNumber, ethers } = require("ethers");
 const ABI = [{ "inputs": [], "name": "gasPrice", "outputs": [{ "internalType": "uint256",  "name": "", "type": "uint256"}],  "stateMutability": "view", "type": "function"}]
 const EVMListener = require("../EVMListener");
-const CONFIG_TABLE = "config";
 
 class GasListener extends EVMListener {
     constructor(
@@ -15,7 +14,7 @@ class GasListener extends EVMListener {
         bridge,
     ) {
         super(oracle, rpc, api, evm_provider, evm_api, config, bridge);
-        let conf = config.scripts.listeners.gas.bridge;
+        const conf = config.scripts.listeners.gas.bridge;
         if(conf.check_interval_ms){
             this.check_interval_ms = conf.check_interval_ms; // Override interval for gas listeners
         }

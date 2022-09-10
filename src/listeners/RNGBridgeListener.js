@@ -16,7 +16,7 @@ class RNGBridgeListener extends Listener {
         bridge
     ){
         super(oracle, rpc, api, config, bridge);
-        let conf = config.scripts.listeners.rng.bridge;
+        const conf = config.scripts.listeners.rng.bridge;
         if(conf.check_interval_ms > 0){
             this.check_interval_ms = conf.check_interval_ms; // Override base interval
         }

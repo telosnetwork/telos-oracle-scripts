@@ -12,7 +12,7 @@ class DelphiBridgeListener extends Listener {
       bridge
   ){
     super(oracle, rpc, api, config, bridge);
-    let conf = config.scripts.listeners.delphi.bridge;
+    const conf = config.scripts.listeners.delphi.bridge;
     if(conf.check_interval_ms){
       this.check_interval_ms = conf.check_interval_ms; // Override base interval
     }
