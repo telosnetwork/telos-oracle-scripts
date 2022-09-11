@@ -21,10 +21,10 @@ sudo npm install pm2 -g
 
 ## Configure
 
-The values configured in the sample are for testnet, change to mainnet where appropriate
+The values configured in the sample below are for testnet, change to `config.yml.sample.mainnet` if appropriate
 
 ```
-cp config.yml.sample config.yml
+cp config.yml.sample.testnet config.yml
 vi config.yml 
 ```
 
@@ -54,20 +54,8 @@ This listeners compares the gas price from eosio.evm to the one stored in the EV
 
 ####   Delphi Updater
 
-This updater retreives pair prices and sends them to the Delphi Oracle. It supports 2 methods: `http` and `file`. Follow the steps below to configure them
+This updater has methods to help retreive pair prices and send them to the Delphi Oracle. You need to implement your own callbacks to parse the received data and use the updater to send them to the oracle, follow the steps below to do so:
 
-##### http
-
-```
-cp config.yml.sample config.yml
-vi config.yml 
-```
-
-##### file
-```
-cp config.yml.sample config.yml
-vi config.yml 
-```
 
 ## Run
 
