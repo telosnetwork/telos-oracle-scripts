@@ -20,6 +20,7 @@ class DelphiBridgeListener extends Listener {
   }
 
   async start() {
+    // HYPERION STREAM
     await super.startStream("Delphi Oracle Bridge", EOSIO_EVM, ACCOUNT_STATE_TABLE, this.bridge.eosio_evm_scope, async(data) => {
       if (this.counter == 0) { // Counter to get only one call per new request (as listener gets called foreach row)
         await this.notify(data);
@@ -27,12 +28,23 @@ class DelphiBridgeListener extends Listener {
       this.counter++;
       this.counter = (this.counter == 11) ? 0 : this.counter;
     });
+
+    // RPC TABLE CHECK
     await this.doTableCheck();
     setInterval(async () => {
       await this.doTableCheck();
     }, this.check_interval_ms)
   }
 
+  async doTableCheck(){
+    await super.doTableCheck("Delphi Oracle Bridge", EOSIO_EVM, this.bridge.eosio_evm_scope, ACCOUNT_STATE_TABLE, async() => {
+      if(this.counter == 11) { // Counter to get only new requests (we only need to call reqnotify once, it will check the table for all requests, but table already has base rows (other contract variable))
+        await this.notify();
+      } else {
+        this.counter++;
+      }
+    });
+  }
   async notify(){
     return await this.api.transact({
         actions: [{
@@ -50,25 +62,6 @@ class DelphiBridgeListener extends Listener {
         this.log('\nCaught exception: ' + e);
       });
   }
-
-  async doTableCheck() {
-    this.log(`Doing table check for Delphi Oracle Bridge...`);
-    const results = await this.rpc.get_table_rows({
-      code: "eosio.evm",
-      scope: this.bridge.eosio_evm_scope,
-      table: "accountstate",
-      limit: 1000,
-    });
-    this.counter = 0;
-    results.rows.forEach(async(row) => {
-      if(this.counter == 11) { // Counter to get only new request
-        await this.notify();
-      }
-      this.counter++;
-    });
-    this.log(`Done doing table check for Delphi Oracle Bridge !`);
-  }
-
 }
 
 module.exports = DelphiBridgeListener;

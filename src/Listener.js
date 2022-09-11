@@ -20,6 +20,23 @@ class Listener {
         this.api = api;
         this.counter = 0;
     }
+
+    // RPC ANTELOPE TABLE CHECK
+    async doTableCheck(name, account, scope, table, callback) {
+        this.log(`Doing table check for ${name}...`);
+        const results = await this.rpc.get_table_rows({
+            code: account,
+            scope: scope,
+            table: table,
+            limit: 1000,
+        });
+        results.rows.forEach(async(row) => {
+            await callback(row);
+        });
+        this.log(`Done doing table check for ${name} !`);
+    }
+
+    // HYPERION STREAM
     async startStream(name, account, table, scope, callback){
         let getInfo = await this.rpc.get_info();
         let headBlock = getInfo.head_block_num;
@@ -64,6 +81,8 @@ class Listener {
             }
         }, this.check_interval_ms)
     }
+
+    // LOG UTIL
     log(message){
         if(this.console_log) console.log(message);
     }

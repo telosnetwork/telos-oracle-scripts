@@ -22,38 +22,32 @@ class RNGRequestListener extends Listener {
 
     async start() {
         if (typeof this.caller.signing_key === "undefined" ){
-            this.log('/!\\ Signing key is undefined. Script will not try to sign.')
+            this.log('/!\\ Signing key is undefined. RNG Oracle Request script will not try to sign.')
         }
+        // HYPERION STREAM
         await super.startStream("RNG Oracle Request", this.oracle, REQUESTS_TABLE, this.oracle, async (data) => {
             await this.signRow(data.content.data);
         })
+        // RPC TABLE CHECK
         await this.doTableCheck();
         setInterval(async () => {
             await this.doTableCheck();
         }, this.check_interval_ms)
     }
 
-    async doTableCheck() {
-        this.log(`Doing table check for RNG Oracle Requests...`);
-        const results = await this.rpc.get_table_rows({
-            code: this.oracle,
-            scope: this.oracle,
-            table: REQUESTS_TABLE,
-            limit: 1000,
-            reverse: true
-        });
-
-        await results.rows.forEach(async (row) => {
-            if(!row.sig2 || row.sig2 === '' ||  row.oracle2 === "eosio.null"){
+    async doTableCheck(){
+        await super.doTableCheck("RNG Oracle Request", this.oracle, this.oracle, REQUESTS_TABLE, async(row) => {
+            if(!row.sig2 || row.sig2 === '' || row.oracle2 === "eosio.null"){
                 await this.signRow(row);
             }
         });
-        this.log(`Done doing table check for RNG Oracle Requests ! `);
     }
+
     removeProcessingRequest(request_id){
         const index = this.processing.indexOf(request_id);
         if (index > -1) { this.processing.splice(index, 1);  }
     }
+
     async signRow(row) {
         if (this.processing.includes(row.request_id) || typeof this.caller.signing_key === "undefined" || row.oracle1 === this.caller.name || row.oracle2 === this.caller.name){
             return false;

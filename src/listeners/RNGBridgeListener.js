@@ -22,7 +22,6 @@ class RNGBridgeListener extends Listener {
     }
 
     async start() {
-        await this.doTableCheck();
         await super.startStream("RNG Oracle Bridge", EOSIO_EVM, ACCOUNT_STATE_TABLE, this.bridge.eosio_evm_scope, async(data) => {
             let row = data.content.data;
             if(this.counter == 0){
@@ -31,9 +30,21 @@ class RNGBridgeListener extends Listener {
             this.counter++;
             this.counter = (this.counter == 11) ? 0 : this.counter;
         })
+        // RPC TABLE CHECK
+        await this.doTableCheck();
         setInterval(async () => {
             await this.doTableCheck();
         }, this.check_interval_ms)
+    }
+
+    async doTableCheck(){
+        await super.doTableCheck("RNG Oracle Bridge", EOSIO_EVM, this.bridge.eosio_evm_scope, ACCOUNT_STATE_TABLE, async() => {
+            if(this.counter == 11) { // Counter to get only new requests (we only need to call reqnotify once, it will check the table for all requests, but table already has base rows (other contract variable))
+                await this.notify();
+            } else {
+                this.counter++;
+            }
+        });
     }
     async notify(){
         return await this.api.transact({
@@ -51,38 +62,6 @@ class RNGBridgeListener extends Listener {
         }).catch(e => {
             this.log('\nCaught exception: ' + e);
         });
-    }
-    async doTableCheck() {
-        this.log(`Doing table check for RNG Oracle Bridge...`);
-        const results = await this.rpc.get_table_rows({
-            code:  EOSIO_EVM,
-            table: ACCOUNT_STATE_TABLE,
-            scope: this.bridge.eosio_evm_scope,
-            limit: 1000,
-        });
-        this.counter = 0;
-        results.rows.forEach(async (row) => {
-            if(this.counter == 11){
-                // TODO: see if request exists before calling ? (ie: no oracles are answering)
-                this.api.transact({
-                    actions: [{
-                        account: this.bridge.antelope_account,
-                        name: 'reqnotify',
-                        authorization: [{ actor: this.caller.name, permission: this.caller.permission }],
-                        data: {},
-                    }]
-                }, {
-                    blocksBehind: 3,
-                    expireSeconds: 90,
-                }).then(result => {
-                    this.log('\nCalled reqnotify()');
-                }).catch(e => {
-                    this.log('\nCaught exception: ' + e);
-                });
-            }
-            this.counter++;
-        });
-        this.log('Done doing table check for RNG Oracle Bridge !');
     }
 }
 
