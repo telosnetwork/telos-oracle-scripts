@@ -34,7 +34,7 @@ class DelphiBridgeListener extends Listener {
   }
 
   async notify(){
-      this.api.transact({
+    return await this.api.transact({
         actions: [{
           account: this.bridge.antelope_account,
           name: 'reqnotify',

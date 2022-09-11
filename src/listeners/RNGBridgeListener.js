@@ -23,24 +23,10 @@ class RNGBridgeListener extends Listener {
 
     async start() {
         await this.doTableCheck();
-        await super.startStream("RNG Oracle Bridge", EOSIO_EVM, ACCOUNT_STATE_TABLE, this.bridge.eosio_evm_scope, (data) => {
+        await super.startStream("RNG Oracle Bridge", EOSIO_EVM, ACCOUNT_STATE_TABLE, this.bridge.eosio_evm_scope, async(data) => {
             let row = data.content.data;
             if(this.counter == 0){
-                this.api.transact({
-                    actions: [{
-                        account: this.bridge.antelope_account,
-                        name: 'reqnotify',
-                        authorization: [{ actor: this.caller.name, permission: this.caller.permission }],
-                        data: {},
-                    }]
-                }, {
-                    blocksBehind: 3,
-                    expireSeconds: 90,
-                }).then(result => {
-                    this.log('\nCalled reqnotify()');
-                }).catch(e => {
-                    this.log('\nCaught exception: ' + e);
-                });
+                await this.notify()
             }
             this.counter++;
             this.counter = (this.counter == 11) ? 0 : this.counter;
@@ -49,7 +35,23 @@ class RNGBridgeListener extends Listener {
             await this.doTableCheck();
         }, this.check_interval_ms)
     }
-
+    async notify(){
+        return await this.api.transact({
+            actions: [{
+                account: this.bridge.antelope_account,
+                name: 'reqnotify',
+                authorization: [{ actor: this.caller.name, permission: this.caller.permission }],
+                data: {},
+            }]
+        }, {
+            blocksBehind: 3,
+            expireSeconds: 90,
+        }).then(result => {
+            this.log('\nCalled reqnotify()');
+        }).catch(e => {
+            this.log('\nCaught exception: ' + e);
+        });
+    }
     async doTableCheck() {
         this.log(`Doing table check for RNG Oracle Bridge...`);
         const results = await this.rpc.get_table_rows({
