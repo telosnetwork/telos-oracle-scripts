@@ -1,4 +1,3 @@
-const ecc = require("eosjs-ecc");
 const Listener = require("../Listener");
 
 const ACCOUNT_STATE_TABLE = "accountstate";
