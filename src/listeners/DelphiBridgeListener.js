@@ -1,7 +1,8 @@
 const ecc = require("eosjs-ecc");
-const HyperionStreamClient = require("@eosrio/hyperion-stream-client").default;
-const fetch = require("node-fetch");
 const Listener = require("../Listener");
+
+const ACCOUNT_STATE_TABLE = "accountstate";
+const EOSIO_EVM = "eosio.evm";
 
 class DelphiBridgeListener extends Listener {
   constructor(
@@ -19,63 +20,19 @@ class DelphiBridgeListener extends Listener {
   }
 
   async start() {
-    await this.startStream();
+    await super.startStream("Delphi Oracle Bridge", EOSIO_EVM, ACCOUNT_STATE_TABLE, this.bridge.eosio_evm_scope, async(data) => {
+      if (this.counter == 0) { // Counter to get only one call per new request (as listener gets called foreach row)
+        await this.notify(data);
+      }
+      this.counter++;
+      this.counter = (this.counter == 11) ? 0 : this.counter;
+    });
     await this.doTableCheck();
     setInterval(async () => {
       await this.doTableCheck();
     }, this.check_interval_ms)
   }
 
-  async startStream() {
-    let getInfo = await this.rpc.get_info();
-    let headBlock = getInfo.head_block_num;
-    this.streamClient = new HyperionStreamClient(
-        this.hyperion,
-        {
-          async: true,
-          fetch: fetch,
-        }
-    );
-    this.streamClient.lastReceivedBlock = headBlock;
-    this.streamClient.onConnect = () => {
-      this.streamClient.streamDeltas({
-        code: 'eosio.evm',
-        table: "accountstate",
-        scope: this.bridge.eosio_evm_scope,
-        payer: "",
-        start_from: headBlock,
-        read_until: 0,
-      });
-    };
-
-    this.streamClient.onData = async (data, ack) => {
-      this.streamClient.lastReceivedBlock = data.block_num;
-      if (data.content.present) {
-        if (this.counter == 0) { // Counter to get only one call per new request (as listener gets called foreach row)
-          await this.notify(data);
-        }
-        this.counter++;
-        this.counter = (this.counter == 11) ? 0 : this.counter;
-      }
-      ack();
-    };
-
-    this.streamClient.connect(() => {
-      this.log("Connected to Hyperion Stream for Delphi Oracle Bridge");
-    });
-
-    let interval = setInterval(async () => {
-      if(typeof this.streamClient.lastReceivedBlock !== "undefined" && this.streamClient.lastReceivedBlock !== 0){
-        let getInfo = await this.rpc.get_info();
-        if(this.max_block_diff < ( getInfo.head_block_num - this.streamClient.lastReceivedBlock)){
-          clearInterval(interval);
-          this.log("Restarting stream for Delphi Oracle Bridge...");
-          this.streamClient.disconnect();
-          await this.startStream();
-        }
-      }
-    }, this.check_interval_ms)
-  }
   async notify(){
       this.api.transact({
         actions: [{
@@ -105,7 +62,7 @@ class DelphiBridgeListener extends Listener {
     this.counter = 0;
     results.rows.forEach(async(row) => {
       if(this.counter == 11) { // Counter to get only new request
-        await this.notify(data);
+        await this.notify();
       }
       this.counter++;
     });

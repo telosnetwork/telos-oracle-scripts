@@ -1,6 +1,4 @@
 const ecc = require("eosjs-ecc");
-const HyperionStreamClient = require("@eosrio/hyperion-stream-client").default;
-const fetch = require("node-fetch");
 const Listener = require("../Listener");
 
 const REQUESTS_TABLE = "rngrequests";
@@ -23,59 +21,15 @@ class RNGRequestListener extends Listener {
     }
 
     async start() {
-        await this.startStream();
-        await this.doTableCheck();
-        setInterval(async () => {
-            await this.doTableCheck();
-        }, this.check_interval_ms)
-    }
-
-    async startStream() {
         if (typeof this.caller.signing_key === "undefined" ){
             this.log('/!\\ Signing key is undefined. Script will not try to sign.')
         }
-        let getInfo = await this.rpc.get_info();
-        let headBlock = getInfo.head_block_num;
-        this.streamClient = new HyperionStreamClient(
-            this.hyperion,
-            {
-                async: true,
-                fetch: fetch,
-            }
-        );
-        this.streamClient.lastReceivedBlock = headBlock;
-        this.streamClient.onConnect = () => {
-            this.streamClient.streamDeltas({
-                code: this.oracle,
-                table: REQUESTS_TABLE,
-                scope: this.oracle,
-                payer: "",
-                start_from: headBlock,
-                read_until: 0,
-            });
-        };
-
-        this.streamClient.onData = async (data, ack) => {
-            this.streamClient.lastReceivedBlock = data.block_num;
-            if (data.content.present) await this.signRow(data.content.data);
-            ack();
-        };
-
-        this.streamClient.connect(() => {
-            this.log("Connected to Hyperion Stream for RNG Oracle Requests !");
-        });
-
-        // check lastReceivedBlock isn't too far from HEAD, else stop stream & start again
-        let interval = setInterval(async () => {
-            if(typeof this.streamClient.lastReceivedBlock !== "undefined" && this.streamClient.lastReceivedBlock !== 0){
-                let getInfo = await this.rpc.get_info();
-                if(this.max_block_diff < ( getInfo.head_block_num - this.streamClient.lastReceivedBlock)){
-                    clearInterval(interval);
-                    this.log("Restarting stream  for RNG Oracle Requests...");
-                    this.streamClient.disconnect();
-                    await this.startStream();
-                }
-            }
+        await super.startStream("RNG Oracle Request", this.oracle, REQUESTS_TABLE, this.oracle, async (data) => {
+            await this.signRow(data.content.data);
+        })
+        await this.doTableCheck();
+        setInterval(async () => {
+            await this.doTableCheck();
         }, this.check_interval_ms)
     }
 

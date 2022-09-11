@@ -1,5 +1,6 @@
 const { RNGRequestListener, RNGBridgeListener, DelphiBridgeListener, GasBridgeListener }  = require('./src/listeners');
 const { DelphiOracleUpdater }  = require('./src/updaters');
+const DelphiOracleCallbacks  = require('./src/callbacks/DelphiOracleCallbacks');
 const ConfigLoader = require('./src/ConfigLoader');
 const eosjs = require('eosjs');
 const JsSignatureProvider = require('eosjs/dist/eosjs-jssig').JsSignatureProvider;
@@ -46,7 +47,9 @@ if(listeners.delphi.bridge.active){
 }
 // Delphi Updater
 if(updaters.delphi.active){
+    const callbacks = new DelphiOracleCallbacks();
     const delphiOracleUpdater = new DelphiOracleUpdater(updaters.delphi.account, config)
+    delphiOracleUpdater.start(callbacks.onRequestSuccess, callbacks.onRequestFailure);
 }
 // RNG Bridge Listener
 if(listeners.rng.bridge.active){

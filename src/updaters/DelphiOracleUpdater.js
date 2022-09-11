@@ -20,12 +20,13 @@ class DelphiOracleUpdater {
         if(this.services.length === 0){
             return;
         }
-        let interval = setInterval(() => {
+        let interval = setInterval(async () => {
             for(var i = 0; i < this.services.length; i++){
-                fetch(this.services[i].url).then((response) => {
-                    callbackSuccess(this, this.services[i].id, response);
+                var service = this.services[i];
+                await fetch(service.url).then((response) => {
+                    callbackSuccess(this, service.id, response);
                 }).catch((e) => {
-                    callbackError(e);
+                    callbackError(service.id, e);
                 });
             }
         }, this.update_interval_ms);
