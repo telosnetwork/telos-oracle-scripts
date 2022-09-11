@@ -22,11 +22,11 @@ class DelphiBridgeListener extends Listener {
   async start() {
     // HYPERION STREAM
     await super.startStream("Delphi Oracle Bridge", EOSIO_EVM, ACCOUNT_STATE_TABLE, this.bridge.eosio_evm_scope, async(data) => {
-      if (this.counter == 0) { // Counter to get only one call per new request (as listener gets called foreach row)
+      if (this.counter == 11) { // Counter to get only one call per new request (as listener gets called foreach row)
         await this.notify(data);
+        this.counter = -1;
       }
       this.counter++;
-      this.counter = (this.counter == 11) ? 0 : this.counter;
     });
 
     // RPC TABLE CHECK
@@ -37,11 +37,12 @@ class DelphiBridgeListener extends Listener {
   }
 
   async doTableCheck(){
+    let table_counter = 0;
     await super.doTableCheck("Delphi Oracle Bridge", EOSIO_EVM, this.bridge.eosio_evm_scope, ACCOUNT_STATE_TABLE, async() => {
-      if(this.counter == 11) { // Counter to get only new requests (we only need to call reqnotify once, it will check the table for all requests, but table already has base rows (other contract variable))
+      if(table_counter == 11) { // Counter to get only new requests (we only need to call reqnotify once, it will check the table for all requests, but table already has base rows (other contract variable))
         await this.notify();
       } else {
-        this.counter++;
+        table_counter++;
       }
     });
   }

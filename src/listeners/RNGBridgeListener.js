@@ -23,12 +23,11 @@ class RNGBridgeListener extends Listener {
 
     async start() {
         await super.startStream("RNG Oracle Bridge", EOSIO_EVM, ACCOUNT_STATE_TABLE, this.bridge.eosio_evm_scope, async(data) => {
-            let row = data.content.data;
-            if(this.counter == 0){
-                await this.notify()
+            if(this.counter == 11){
+                await this.notify();
+                this.counter = -1;
             }
             this.counter++;
-            this.counter = (this.counter == 11) ? 0 : this.counter;
         })
         // RPC TABLE CHECK
         await this.doTableCheck();
@@ -38,11 +37,12 @@ class RNGBridgeListener extends Listener {
     }
 
     async doTableCheck(){
+        let table_counter = 0;
         await super.doTableCheck("RNG Oracle Bridge", EOSIO_EVM, this.bridge.eosio_evm_scope, ACCOUNT_STATE_TABLE, async() => {
-            if(this.counter == 11) { // Counter to get only new requests (we only need to call reqnotify once, it will check the table for all requests, but table already has base rows (other contract variable))
+            if(this.table_counter == 11) { // Counter to get only new requests (we only need to call reqnotify once, it will check the table for all requests, but table already has base rows (other contract variable))
                 await this.notify();
             } else {
-                this.counter++;
+                this.table_counter++;
             }
         });
     }
