@@ -180,7 +180,7 @@ You should implement your own code there to parse the response and then use the 
 
 ### onRequestFailure
 
-The `onRequestFailure(error)` callback will be called after a failed HTTP request to a configured service (see configuration above).
+The `onRequestFailure(error)` callback will be called after a failed HTTP request to a configured service (see updaters > delphi oracle configuration above).
 
 ## Run
 
