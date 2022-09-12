@@ -91,7 +91,7 @@ Endpoint configuration for EVM.
 ### > Listeners
 
 ```
-    console_log: true
+    console_log: true # print listeners errors in console or not
     max_block_diff: 1200 # Restart stream if it hasn't received data since X blocks... (1200 / 2 = 600s = 10mn)
     check_interval_ms: 30000 # Check table every X to make sure stream didn't miss anything
 ```
