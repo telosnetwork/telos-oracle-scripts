@@ -19,7 +19,7 @@ if(!config){
 }
 
 // Instantiate services & variables
-const signatureProvider = new JsSignatureProvider([config.antelope.oracle.private_key]);
+const signatureProvider = new JsSignatureProvider([config.antelope.caller.private_key]);
 const rpc = new JsonRpc(config.antelope.rpc, { fetch });
 const evm_provider = new ethers.providers.JsonRpcProvider(config.evm.rpc);
 

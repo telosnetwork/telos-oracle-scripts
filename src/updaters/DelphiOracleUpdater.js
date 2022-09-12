@@ -52,7 +52,7 @@ class DelphiOracleUpdater {
                 }]
             }, {
                 blocksBehind: 3,
-                expireSeconds: 30,
+                expireSeconds: 60,
             });
         } catch (e) {
            console.log(e.message);
