@@ -88,6 +88,72 @@ Endpoint configuration for EVM.
   network: 41
 ```
 
+### > Listeners
+
+```
+    console_log: true
+    max_block_diff: 1200 # Restart stream if it hasn't received data since X blocks... (1200 / 2 = 600s = 10mn)
+    check_interval_ms: 30000 # Check table every X to make sure stream didn't miss anything
+```
+
+#### Delphi Oracle
+
+```
+      account: "delphioracle"
+      bridge:
+        account: "delphibridge"
+        active: true
+        eosio_evm_scope: 36263
+        check_interval_ms: 30000 # This will override the general listeners one for this listener
+```
+
+#### RNG Oracle
+
+
+```
+      account: "rng.oracle"
+      request:
+        active: true
+        check_interval_ms: 30000
+      bridge:
+        active: true
+        account: "rng.bridge"
+        linked_evm_address: "0x63c910d38a4717abe48f923d873314b9260e6dab"
+        eosio_evm_scope: 36255
+        evm_contract: "0xcbB8a0e3Ec07A8baB91CCAA6E1F368AB919acd30"
+        check_interval_ms: 30000
+
+```
+
+#### Gas Oracle
+
+```
+      account: "eosio.evm"
+      bridge:
+        active: true
+        check_interval_ms: 3000
+        evm_contract: "0x648ac5a8c4E1ae5A93cd5BeDF143B095B8c49a2a"
+        account: "gasbridge"
+        
+```
+
+### > Updaters
+
+```
+    console_log: true
+```
+
+#### Delphi Oracle
+
+```
+      active: true
+      update_interval_ms: 3000
+      account: "delphioracle"
+      services:
+        - id: 'coingecko'
+          url: 'https://api.coingecko.com/api/v3/simple/price?ids=telos&vs_currencies=usd%2Ceos'
+```
+
 ## Customize the Delphi Updater
 
 The Delphi Oracle Updater contains a minimal implementation to get currency price from coingecko. 
