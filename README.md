@@ -30,7 +30,7 @@ This listeners compares the gas price from `eosio.evm` to the one stored in the 
 
 ####   Delphi Updater
 
-This updater has methods to help retreive pair prices and send them to the Delphi Oracle. You need to implement your own callbacks to parse the received data and use the updater to send them to the oracle, follow the steps in **["Customize the Delphi Updater"](https://github.com/telosnetwork/telos-oracle-scripts#customize-the-delphi-updater)** below to do so.
+This updater has methods to help retreive pair prices and send them to the Delphi Oracle. You need to implement your own callbacks to parse the received data and use the updater to send them to the oracle, follow the steps in **[Customize the Delphi Updater](https://github.com/telosnetwork/telos-oracle-scripts#customize-the-delphi-updater)** below to do so.
 
 ## Requirement
 
