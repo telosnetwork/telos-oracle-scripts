@@ -9,7 +9,7 @@ class Listener {
         config,
         bridge
     ) {
-        this.caller = {"name": config.antelope.oracle.name, "permission": config.antelope.oracle.permission, "private_key":  config.antelope.oracle.private_key, "signing_key":  config.antelope.oracle.signing_key};
+        this.caller = {"name": config.antelope.caller.name, "permission": config.antelope.caller.permission, "private_key":  config.antelope.caller.private_key, "signing_key":  config.antelope.caller.signing_key};
         this.oracle = oracle;
         this.bridge = bridge;
         this.check_interval_ms = config.scripts.listeners.check_interval_ms;

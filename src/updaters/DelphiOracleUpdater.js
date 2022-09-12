@@ -5,7 +5,7 @@ const fs = require('fs');
 class DelphiOracleUpdater {
     constructor(oracle, config, api){
         this.update_interval_ms = config.scripts.updaters.delphi.update_interval_ms;
-        this.caller = {"name": config.antelope.oracle.name, "permission": config.antelope.oracle.permission, "private_key":  config.antelope.oracle.private_key, "signing_key":  config.antelope.oracle.signing_key};
+        this.caller = {"name": config.antelope.caller.name, "permission": config.antelope.caller.permission, "private_key":  config.antelope.caller.private_key, "signing_key":  config.antelope.caller.signing_key};
         this.oracle = oracle;
         this.api = api;
         this.services = config.scripts.updaters.delphi.services;
