@@ -33,7 +33,7 @@ You will find a description of each configuration item below.
 
 #### Caller
 
-This part of the configuration pertains to your own creditenials, it is required for listeners & updaters that need to perform actions on chain like the `RNGRequestListener`.
+This part of the configuration pertains to your own creditenials, it is required for listeners & updaters that need to perform actions on chain like the `RNGRequestListener` and the `DelphiOracleUpdater`.
 
 ```
     name: "oracletest" # Your antelope account name
