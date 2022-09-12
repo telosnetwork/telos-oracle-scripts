@@ -170,7 +170,7 @@ You can add any number of services to query, like so:
 
 ## Customize the Delphi Updater
 
-The Delphi Oracle Updater contains a minimal implementation to get currency price from coingecko. 
+The Delphi Oracle Updater contains a minimal implementation to get TLOS's USD, EOS & ETH prices from coingecko. 
 You can replace it and implement your own logic inside the `callbacks/DelphiUpdaterCallbacks.js` file
 
 ### onRequestSuccess
