@@ -45,6 +45,12 @@ This part of the configuration pertains to your own creditenials, it is required
 
 Endpoint configuration for Antelope.
 
+
+```
+  rpc: "https://testnet.telos.caleos.io"
+  hyperion: "https://testnet.telos.caleos.io"
+```
+
 ### > EVM
 
 ### > Listeners
