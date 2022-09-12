@@ -81,7 +81,7 @@ class RNGRequestListener extends Listener {
             this.removeProcessingRequest(row.request_id);
             return result;
         } catch (e) {
-            console.error(`Submitting signature failed: ${e}`);
+            console.error(`Submitting signature for request ${row.request_id} failed: ${e}`);
             this.removeProcessingRequest(row.request_id);
             return false;
         }
