@@ -30,6 +30,17 @@ vi config.yml
 
 ### > Antelope
 
+#### Oracle
+
+This part of the configuration pertains to your own creditenials, it is required for listeners & updaters that need to perform actions on chain like the `RNGRequestListener`.
+
+```
+    name: "oracletest"
+    permission: "active"
+    private_key: "5J2..."
+    signing_key: "5J2..."
+```
+
 ### > EVM
 
 ### > Listeners
