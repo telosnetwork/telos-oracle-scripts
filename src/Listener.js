@@ -29,6 +29,7 @@ class Listener {
             scope: scope,
             table: table,
             limit: 1000,
+            reverse: true
         });
         results.rows.forEach(async(row) => {
             await callback(row);
@@ -76,7 +77,7 @@ class Listener {
                     clearInterval(interval);
                     this.log("Restarting stream for " + name + "...");
                     this.streamClient.disconnect();
-                    await this.startStream(account, table, scope, callback);
+                    await this.startStream(name, account, table, scope, callback);
                 }
             }
         }, this.check_interval_ms)

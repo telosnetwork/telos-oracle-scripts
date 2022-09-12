@@ -39,11 +39,10 @@ class RNGBridgeListener extends Listener {
     async doTableCheck(){
         let table_counter = 0;
         await super.doTableCheck("RNG Oracle Bridge", EOSIO_EVM, this.bridge.eosio_evm_scope, ACCOUNT_STATE_TABLE, async() => {
-            if(this.table_counter == 11) { // Counter to get only new requests (we only need to call reqnotify once, it will check the table for all requests, but table already has base rows (other contract variable))
-                await this.notify();
-            } else {
-                this.table_counter++;
+            if(table_counter === 11) { // Counter to get only new requests (we only need to call reqnotify once, it will check the table for all requests, but table already has base rows (other contract variable))
+                this.notify();
             }
+            table_counter++;
         });
     }
     async notify(){
