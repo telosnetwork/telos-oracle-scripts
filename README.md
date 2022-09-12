@@ -84,8 +84,12 @@ This listeners compares the gas price from eosio.evm to the one stored in the EV
 
 ####   Delphi Updater
 
-This updater has methods to help retreive pair prices and send them to the Delphi Oracle. You need to implement your own callbacks to parse the received data and use the updater to send them to the oracle, follow the steps below to do so:
+This updater has methods to help retreive pair prices and send them to the Delphi Oracle. You need to implement your own callbacks to parse the received data and use the updater to send them to the oracle, follow the steps in "Customize the Delphi Updater" below to do so.
 
+## Customize the Delphi Updater
+
+The Delphi Oracle Updater contains a minimal implementation to get currency price from coingecko. 
+You can implement your own logic inside the `callbacks/DelphiUpdaterCallbacks.js` file
 
 ## Run
 
