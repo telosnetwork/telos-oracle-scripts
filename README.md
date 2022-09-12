@@ -36,9 +36,9 @@ This part of the configuration pertains to your own creditenials, it is required
 
 ```
     name: "oracletest" # Your antelope account name
-    permission: "active" # The permission used to sign actions (active is fine)
-    private_key: "5J2..." # Private key
-    signing_key: "5J2..." # Signing key (can == private_key)
+    permission: "active" 
+    private_key: "5J2..."
+    signing_key: "5J2..."
 ```
 
 ### > EVM
