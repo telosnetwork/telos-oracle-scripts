@@ -24,7 +24,7 @@ This listeners listens to requests made to the RNG Oracle and signs them if need
 
 ####   Gas Bridge Listener
 
-This listeners compares the gas price from eosio.evm to the one stored in the EVM GasOracleBridge contract. If it is different it calls the `gasbridge` antelope contract's `verify()` action that also compares the prices & updates the price of the GasOracleBridge on EVM if needed.
+This listeners compares the gas price from `eosio.evm` to the one stored in the EVM `GasOracleBridge` contract. If it is different it calls the `gasbridge` antelope contract's `verify()` action that also compares the prices & updates the price of the `GasOracleBridge` contract on EVM if they are different.
 
 ### > Updaters
 
