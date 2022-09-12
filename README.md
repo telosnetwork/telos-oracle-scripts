@@ -53,6 +53,14 @@ Endpoint configuration for Antelope.
 
 ### > EVM
 
+Endpoint configuration for EVM.
+
+```
+  api: "https://testnet.telos.net"
+  rpc: "https://testnet.telos.net/evm"
+  network: 41
+```
+
 ### > Listeners
 
 ####   Delphi Bridge Listener
