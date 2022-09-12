@@ -8,7 +8,7 @@ And their bridge repositories here: [RNG Oracle Bridge](https://github.com/telos
 
 ## Requirement
 
-This repository requires NodeJS 14+, NPM and PM2
+This repository requires NodeJS 14+ and NPM
 
 ## Install
 
