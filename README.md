@@ -171,5 +171,5 @@ The `onRequestFailure(error)` callback will be called after a failed HTTP reques
 ## Run
 
 ```
-pm2 start index.js --name oracle-listeners
+pm2 start index.js --name oracle-scripts
 ```
