@@ -1,6 +1,6 @@
 # Telos Oracle Scripts
 
-This repository contains various scripts for BPs and other Telos actors to help run the Telos Oracles and their respective bridges.
+This repository contains various scripts for BPs and other Telos actors to help run the Telos Oracles and their respective bridges trustlessly.
 
 You can find our oracle repositories here: [Delphi Oracle](https://github.com/telosnetwork/delphioracle), [RNG Oracle](https://github.com/telosnetwork/telos-oracle-rng)
 
