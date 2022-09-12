@@ -2,10 +2,10 @@ const { RNGRequestListener, RNGBridgeListener, DelphiBridgeListener, GasBridgeLi
 const { DelphiOracleUpdater }  = require('./src/updaters');
 const DelphiOracleCallbacks  = require('./src/callbacks/DelphiOracleCallbacks');
 const ConfigLoader = require('./src/ConfigLoader');
-const eosjs = require('eosjs');
+const Eos = require('eosjs');
 const JsSignatureProvider = require('eosjs/dist/eosjs-jssig').JsSignatureProvider;
-const JsonRpc = eosjs.JsonRpc;
-const Api = eosjs.Api;
+const JsonRpc = Eos.JsonRpc;
+const Api = Eos.Api;
 const { TelosEvmApi } = require("@telosnetwork/telosevm-js");
 const fetch = require('node-fetch');
 const util = require('util');
@@ -22,6 +22,7 @@ if(!config){
 const signatureProvider = new JsSignatureProvider([config.antelope.oracle.private_key]);
 const rpc = new JsonRpc(config.antelope.rpc, { fetch });
 const evm_provider = new ethers.providers.JsonRpcProvider(config.evm.rpc);
+
 const api = new Api({
     rpc,
     signatureProvider,
@@ -47,9 +48,9 @@ if(listeners.delphi.bridge.active){
 }
 // Delphi Updater
 if(updaters.delphi.active){
+    const delphiOracleUpdater = new DelphiOracleUpdater(updaters.delphi.account, config, api)
     const callbacks = new DelphiOracleCallbacks();
-    const delphiOracleUpdater = new DelphiOracleUpdater(updaters.delphi.account, config)
-    delphiOracleUpdater.start(callbacks.onRequestSuccess, callbacks.onRequestFailure);
+    delphiOracleUpdater.start(callbacks.onRequestSuccess.bind(this), callbacks.onRequestFailure.bind(this));
 }
 // RNG Bridge Listener
 if(listeners.rng.bridge.active){

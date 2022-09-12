@@ -3,10 +3,11 @@ const fetch = require('node-fetch');
 const fs = require('fs');
 
 class DelphiOracleUpdater {
-    constructor(oracle, config){
+    constructor(oracle, config, api){
         this.update_interval_ms = config.scripts.updaters.delphi.update_interval_ms;
         this.caller = {"name": config.antelope.oracle.name, "permission": config.antelope.oracle.permission, "private_key":  config.antelope.oracle.private_key, "signing_key":  config.antelope.oracle.signing_key};
         this.oracle = oracle;
+        this.api = api;
         this.services = config.scripts.updaters.delphi.services;
         this.quotes = [];
     }
@@ -16,7 +17,7 @@ class DelphiOracleUpdater {
     addQuote(quote) {
         this.quotes.push(quote);
     }
-    start(callbackSucess, callbackError){
+    start(callbackSuccess, callbackError){
         if(this.services.length === 0){
             return;
         }
@@ -31,29 +32,32 @@ class DelphiOracleUpdater {
             }
         }, this.update_interval_ms);
     }
-    send(callbackSucess, callbackError){
+    async send(){
         if(this.quotes.length === 0 || !this.caller.name){
             return;
         }
-        eos.contract(this.oracle).then((contract) => {
-            contract.write({
-                owner: this.caller.name,
-                quotes: this.quotes
-            },
-            {
-                scope: this.oracle,
-                authorization: [`${this.caller.name}@${this.caller.permission || 'active'}`]
-            })
-            .then(results=>{
-                this.quotes = [];
-                callbackSucess(results);
-            })
-            .catch(error=>{
-                callbackError(error);
+        try {
+            return await this.api.transact({
+                actions: [{
+                    account: 'delphioracle',
+                    name: 'write',
+                    authorization: [{
+                        actor: this.caller.name,
+                        permission: this.caller.permission || 'active',
+                    }],
+                    data: {
+                        owner: this.caller.name,
+                        quotes: this.quotes
+                    },
+                }]
+            }, {
+                blocksBehind: 3,
+                expireSeconds: 30,
             });
-        }).catch(error=>{
-            callbackError(error);
-        });
+        } catch (e) {
+           console.log(e.message);
+           return false;
+        }
     }
 }
 

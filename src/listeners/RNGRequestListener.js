@@ -1,3 +1,4 @@
+const ecc = require("eosjs-ecc");
 const Listener = require("../Listener");
 
 const REQUESTS_TABLE = "rngrequests";
