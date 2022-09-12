@@ -6,6 +6,30 @@ You can find our oracle repositories here: [Delphi Oracle](https://github.com/te
 
 And their bridge repositories here: [RNG Oracle Bridge](https://github.com/telosnetwork/rng-oracle-bridge), [Delphi Oracle Bridge](https://github.com/telosnetwork/delphi-oracle-bridge), [Gas Bridge](https://github.com/telosnetwork/gas-oracle-bridge)
 
+### > Listeners
+
+####   Delphi Bridge Listener
+
+This listeners listens to requests made to the DelphiOracleBridge contract on EVM and calls `reqnotify()` of the `delphibridge` antelope contract.
+
+####   RNG Bridge Listener
+
+This listeners listens to requests made to the RNGOracleBridge contract on EVM and calls `reqnotify()` of the `rngorcbrdg` antelope contract.
+
+####   RNG Oracle Request Listener
+
+This listeners listens to requests made to the RNG Oracle and signs them if needed.
+
+####   Gas Bridge Listener
+
+This listeners compares the gas price from eosio.evm to the one stored in the EVM GasOracleBridge contract. If it is different it calls the `gasbridge` antelope contract's `verify()` action that also compares the prices & updates the price of the GasOracleBridge on EVM if needed.
+
+### > Updaters
+
+####   Delphi Updater
+
+This updater has methods to help retreive pair prices and send them to the Delphi Oracle. You need to implement your own callbacks to parse the received data and use the updater to send them to the oracle, follow the steps in **"Customize the Delphi Updater"** below to do so.
+
 ## Requirement
 
 This repository requires NodeJS 14+ and NPM
@@ -61,30 +85,6 @@ Endpoint configuration for EVM.
   rpc: "https://testnet.telos.net/evm"
   network: 41
 ```
-
-### > Listeners
-
-####   Delphi Bridge Listener
-
-This listeners listens to requests made to the DelphiOracleBridge contract on EVM and calls `reqnotify()` of the `delphibridge` antelope contract.
-
-####   RNG Bridge Listener
-
-This listeners listens to requests made to the RNGOracleBridge contract on EVM and calls `reqnotify()` of the `rngorcbrdg` antelope contract.
-
-####   RNG Oracle Request Listener
-
-This listeners listens to requests made to the RNG Oracle and signs them if needed.
-
-####   Gas Bridge Listener
-
-This listeners compares the gas price from eosio.evm to the one stored in the EVM GasOracleBridge contract. If it is different it calls the `gasbridge` antelope contract's `verify()` action that also compares the prices & updates the price of the GasOracleBridge on EVM if needed.
-
-### > Updaters
-
-####   Delphi Updater
-
-This updater has methods to help retreive pair prices and send them to the Delphi Oracle. You need to implement your own callbacks to parse the received data and use the updater to send them to the oracle, follow the steps in **"Customize the Delphi Updater"** below to do so.
 
 ## Customize the Delphi Updater
 
