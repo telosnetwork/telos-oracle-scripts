@@ -175,7 +175,7 @@ You can replace it and implement your own logic inside the `callbacks/DelphiUpda
 
 ### onRequestSuccess
 
-The `onRequestSuccess(updater, id, response)` callback will be called after a sucessfull HTTP request to a configured service (see configuration above).
+The `onRequestSuccess(updater, id, response)` callback will be called after a sucessfull HTTP request to services defined in the configuration (see updaters > delphi > services above).
 You should implement your own code here to parse the response and then use the `updater` object passed to the function to add quotes and send them to the Delphi Oracle. 
 
 ```
@@ -186,7 +186,7 @@ You should implement your own code here to parse the response and then use the `
 
 ### onRequestFailure
 
-The `onRequestFailure(error)` callback will be called after a failed HTTP request to a configured service (see configuration above).
+The `onRequestFailure(error)` callback will be called after a failed HTTP request to services defined in the configuration (see updaters > delphi > services above).
 
 ```
     onRequestFailure(updater, id, response){
