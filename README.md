@@ -159,6 +159,15 @@ Endpoint configuration for EVM.
 The Delphi Oracle Updater contains a minimal implementation to get currency price from coingecko. 
 You can implement your own logic inside the `callbacks/DelphiUpdaterCallbacks.js` file
 
+### onRequestSuccess
+
+The `onRequestSuccess(updater, id, response)` callback will be called after a sucessfull HTTP request to a configured service (see configuration above).
+You should implement your own code there to parse the response and then use the updater object to add quotes and send them to the Delphi Oracle. 
+
+### onRequestFailure
+
+The `onRequestFailure(error)` callback will be called after a failed HTTP request to a configured service (see configuration above).
+
 ## Run
 
 ```
