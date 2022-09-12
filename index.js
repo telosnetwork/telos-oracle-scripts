@@ -48,7 +48,7 @@ if(listeners.delphi.bridge.active){
 }
 // Delphi Updater
 if(updaters.delphi.active){
-    const delphiOracleUpdater = new DelphiOracleUpdater(updaters.delphi.account, config, api)
+    const delphiOracleUpdater = new DelphiOracleUpdater(updaters.delphi.account, config, updaters.delphi, api)
     const callbacks = new DelphiOracleCallbacks();
     delphiOracleUpdater.start(callbacks.onRequestSuccess.bind(this), callbacks.onRequestFailure.bind(this));
 }

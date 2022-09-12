@@ -1,13 +1,11 @@
+const Updater = require('../Updater.js');
 const Eos = require('eosjs');
 const fetch = require('node-fetch');
 const fs = require('fs');
 
-class DelphiOracleUpdater {
-    constructor(oracle, config, api){
-        this.update_interval_ms = config.scripts.updaters.delphi.update_interval_ms;
-        this.caller = {"name": config.antelope.caller.name, "permission": config.antelope.caller.permission, "private_key":  config.antelope.caller.private_key, "signing_key":  config.antelope.caller.signing_key};
-        this.oracle = oracle;
-        this.api = api;
+class DelphiOracleUpdater extends Updater {
+    constructor(oracle, config, updater_config, api){
+        super(oracle, config, updater_config, api)
         this.services = config.scripts.updaters.delphi.services;
         this.quotes = [];
     }
@@ -24,9 +22,17 @@ class DelphiOracleUpdater {
         let interval = setInterval(async () => {
             for(var i = 0; i < this.services.length; i++){
                 var service = this.services[i];
-                await fetch(service.url).then((response) => {
-                    callbackSuccess(this, service.id, response);
+                await fetch(service.url).then(async (response) => {
+                    let data;
+                    if(service.response_type === "json"){
+                        data = await response.json();
+                    } else {
+                        data = await response.text();
+                    }
+                    this.log('Request to '+ service.id + ' succeeded');
+                    callbackSuccess(this, service.id, data);
                 }).catch((e) => {
+                    this.log('Request to ' + service.id + ' failed');
                     callbackError(service.id, e);
                 });
             }
@@ -55,7 +61,7 @@ class DelphiOracleUpdater {
                 expireSeconds: 60,
             });
         } catch (e) {
-           console.log(e.message);
+           this.log(e.message);
            return false;
         }
     }
