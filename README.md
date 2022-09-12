@@ -103,8 +103,8 @@ Endpoint configuration for EVM.
       bridge:
         account: "delphibridge"
         active: true
-        eosio_evm_scope: 36263
-        check_interval_ms: 30000 # This will override the general listeners one for this listener
+        eosio_evm_scope: 36263 # Scope for eosio.evm accountstate table (index of EVM contract in eosio.evm account table)
+        check_interval_ms: 30000 # This will override the general listeners one defined previously
 ```
 
 #### RNG Oracle
@@ -114,14 +114,14 @@ Endpoint configuration for EVM.
       account: "rng.oracle"
       request:
         active: true
-        check_interval_ms: 30000
+        check_interval_ms: 30000 # This will override the general listeners one defined previously
       bridge:
         active: true
         account: "rng.bridge"
         linked_evm_address: "0x63c910d38a4717abe48f923d873314b9260e6dab"
-        eosio_evm_scope: 36255
+        eosio_evm_scope: 36255 # Scope for eosio.evm accountstate table (index of EVM contract in eosio.evm account table)
         evm_contract: "0xcbB8a0e3Ec07A8baB91CCAA6E1F368AB919acd30"
-        check_interval_ms: 30000
+        check_interval_ms: 30000 # This will override the general listeners one defined previously
 
 ```
 
@@ -131,7 +131,7 @@ Endpoint configuration for EVM.
       account: "eosio.evm"
       bridge:
         active: true
-        check_interval_ms: 3000
+        check_interval_ms: 3000 # This will override the general listeners one defined previously
         evm_contract: "0x648ac5a8c4E1ae5A93cd5BeDF143B095B8c49a2a"
         account: "gasbridge"
         
@@ -147,7 +147,7 @@ Endpoint configuration for EVM.
 
 ```
       active: true
-      update_interval_ms: 3000
+      update_interval_ms: 3000 
       account: "delphioracle"
       services:
         - id: 'coingecko'
