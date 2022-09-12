@@ -41,6 +41,10 @@ This part of the configuration pertains to your own creditenials, it is required
     signing_key: "5J2..."
 ```
 
+#### RPC / Hyperion
+
+Endpoint configuration for Antelope.
+
 ### > EVM
 
 ### > Listeners
