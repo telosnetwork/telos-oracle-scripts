@@ -186,7 +186,7 @@ You should implement your own code here to parse the response and then use the `
 
 To send quotes use `updater.addQuote({'value': 'VALUE HERE', 'pair': 'PAIR HERE'})` followed by `updater.send()`
 
-You can add as many quotes as you want and reset the quotes with `updater.quotes = []` or `updater.resetQuotes()` if needed
+You can add as many quotes as you want and reset the quotes with `updater.quotes = []` or `updater.resetQuotes()` if needed, note that quotes will be reseted on sucessfull send.
 
 Refer to the default logic inside `callbacks/DelphiUpdaterCallbacks.js` for an example.
 
