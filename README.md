@@ -27,6 +27,7 @@ The values configured in the sample below are for testnet, change to `config.yml
 cp config.yml.sample.testnet config.yml
 vi config.yml 
 ```
+You will find a description of each configuration item below.
 
 ### > Antelope
 
