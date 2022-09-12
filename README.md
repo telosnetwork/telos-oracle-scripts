@@ -152,7 +152,21 @@ Endpoint configuration for EVM.
       services:
         - id: 'coingecko'
           url: 'https://api.coingecko.com/api/v3/simple/price?ids=telos&vs_currencies=usd%2Ceos'
+          response_type: "json"
 ```
+
+You can add any number of services to query, like so:
+
+```
+      services:
+        - id: 'coingecko'
+          url: 'https://api.coingecko.com/api/v3/simple/price?ids=telos&vs_currencies=usd%2Ceos'
+          response_type: "json"
+        - id: 'myapi'
+          url: 'https://myapi.com/price?ids=telos&v=usd'
+          response_type: "json"
+```
+
 
 ## Customize the Delphi Updater
 
