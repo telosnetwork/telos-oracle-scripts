@@ -181,7 +181,8 @@ You should implement your own code here to parse the response and then use the `
 ```
     onRequestSuccess(updater, id, response){
         // Your code here
-        // To send quotes use updater.addQuote({'value': 'VALUE HERE', 'pair': 'PAIR HERE'}) followed by updater.send()
+        // To send quotes use updater.addQuote({'value': 'VALUE HERE', 'pair': 'PAIR HERE'}) followed by updater.send(), 
+        // You can add as many as you want and reset the quotes with updater.quotes = [] or updater.resetQuotes() if needed
         // See the default logic of that callback for an example
     }
 ```
