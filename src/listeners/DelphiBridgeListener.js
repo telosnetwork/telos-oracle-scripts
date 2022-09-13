@@ -26,7 +26,7 @@ class DelphiBridgeListener extends EVMListener {
       // We use a counter because that table contains ALL EVM contract variables, not just the requests and requests also have several rows
       if (this.counter == 11) {
         // Given we cannot define an appropriate number to count by (our requestCount mapping per address makes it variable depending if the caller already exists or not) we need to check the EVM contract to make sure we have a request
-        await doTableCheck(); // Check if requests are in EVM contract or not
+        await this.doTableCheck(); // Check if requests are in EVM contract or not
         this.counter = -1;
       }
       this.counter++;
