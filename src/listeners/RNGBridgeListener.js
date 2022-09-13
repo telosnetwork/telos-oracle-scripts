@@ -1,21 +1,23 @@
 const ecc = require("eosjs-ecc");
 const { BigNumber, ethers, utils } = require("ethers");
-const Listener = require("../Listener");
-const ABI = { "inputs": [ { "internalType": "uint256", "name": "", "type": "uint256" } ], "name": "requests", "outputs": [ { "internalType": "uint256", "name": "id", "type": "uint256" }, { "internalType": "address", "name": "caller_address", "type": "address"}, { "internalType": "uint256", "name": "caller_id",  "type": "uint256" }, { "internalType": "uint256", "name": "requested_at", "type": "uint256" }, { "internalType": "uint64", "name": "seed", "type": "uint64" }, { "internalType": "uint256", "name": "min", "type": "uint256" }, { "internalType": "uint256", "name": "max", "type": "uint256" }, { "internalType": "uint256", "name": "callback_gas", "type": "uint256" }, { "internalType": "address",  "name": "callback_address", "type": "address" }], "stateMutability": "view", "type": "function"}
+const EVMListener = require("../EVMListener");
+const ABI = [{"inputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "name": "requests", "outputs": [{ "internalType": "uint256", "name": "id", "type": "uint256" }, { "internalType": "address", "name": "caller_address", "type": "address"}, { "internalType": "uint256", "name": "caller_id",  "type": "uint256" }, { "internalType": "uint256", "name": "requested_at", "type": "uint256" }, { "internalType": "uint64", "name": "seed", "type": "uint64" }, { "internalType": "uint256", "name": "min", "type": "uint256" }, { "internalType": "uint256", "name": "max", "type": "uint256" }, { "internalType": "uint256", "name": "callback_gas", "type": "uint256" }, { "internalType": "address",  "name": "callback_address", "type": "address" }], "stateMutability": "view", "type": "function"}];
 
 const ACCOUNT_STATE_TABLE = "accountstate";
 const EOSIO_EVM = "eosio.evm";
 
-class RNGBridgeListener extends Listener {
+class RNGBridgeListener extends EVMListener {
 
     constructor(
         oracle,
         rpc,
         api,
+        evm_provider,
+        evm_api,
         config,
-        bridge
+        bridge,
     ){
-        super(oracle, rpc, api, config, bridge);
+        super(oracle, rpc, api, evm_provider, evm_api, config, bridge);
         const conf = config.scripts.listeners.rng.bridge;
         if(conf.check_interval_ms > 0){
             this.check_interval_ms = conf.check_interval_ms; // Override base interval
@@ -38,9 +40,17 @@ class RNGBridgeListener extends Listener {
     }
 
     async doTableCheck(){
-        let table_counter = 0;
-        // TODO: get array length with ethers, if > 0 call reqnotify();
-
+        this.log("Doing table check for RNG Oracle Bridge...");
+        try {
+            const evm_contract = new ethers.Contract(this.bridge.eth_account, ABI, this.evm_provider);
+            const request = await evm_contract.requests(0);
+            await this.notify();
+            this.log("Done doing table check for RNG Oracle Bridge...");
+            return true;
+        } catch (e) {
+            this.log("Table check for RNG Oracle Bridge reverted, no requests found");
+            return false;
+        }
     }
     async notify(){
         return await this.api.transact({
