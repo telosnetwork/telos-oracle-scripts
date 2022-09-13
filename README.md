@@ -168,6 +168,10 @@ You can add any number of services to query, like so:
           response_type: "json"
 ```
 
+The `response_type` can be `json` or `text` (leaving it empty will make it `text`)
+
+_After adding services you will need to customize the Delphi Updater to handle the response, see below_
+
 
 ## Customize the Delphi Updater
 
@@ -201,7 +205,7 @@ The `onRequestFailure(error)` callback will be called after a failed HTTP reques
     }
 ```
 
-Refer to the default logic inside `callbacks/DelphiUpdaterCallbacks.js` for an example.
+Refer to the default logic inside [callbacks/DelphiUpdaterCallbacks.js](https://github.com/telosnetwork/telos-oracle-scripts/blob/master/src/callbacks/DelphiOracleCallbacks.js) for an example.
 
 ## Run
 
