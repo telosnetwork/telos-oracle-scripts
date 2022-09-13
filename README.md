@@ -168,6 +168,8 @@ You can add any number of services to query, like so:
           response_type: "json"
 ```
 
+The `response_type` can be `json` or `text` (leaving it empty will make it `text`)
+
 
 ## Customize the Delphi Updater
 
