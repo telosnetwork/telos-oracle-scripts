@@ -22,14 +22,14 @@ class Listener {
     }
 
     // RPC ANTELOPE TABLE CHECK
-    async doTableCheck(name, account, scope, table, callback) {
+    async doTableCheck(name, account, scope, table, reverse, callback) {
         this.log(`Doing table check for ${name}...`);
         const results = await this.rpc.get_table_rows({
             code: account,
             scope: scope,
             table: table,
             limit: 1000,
-            reverse: true
+            reverse: reverse
         });
         results.rows.forEach(async(row) => {
             await callback(row);

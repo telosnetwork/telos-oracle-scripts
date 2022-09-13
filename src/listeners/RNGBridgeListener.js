@@ -1,6 +1,7 @@
 const ecc = require("eosjs-ecc");
 const { BigNumber, ethers, utils } = require("ethers");
 const Listener = require("../Listener");
+const ABI = { "inputs": [ { "internalType": "uint256", "name": "", "type": "uint256" } ], "name": "requests", "outputs": [ { "internalType": "uint256", "name": "id", "type": "uint256" }, { "internalType": "address", "name": "caller_address", "type": "address"}, { "internalType": "uint256", "name": "caller_id",  "type": "uint256" }, { "internalType": "uint256", "name": "requested_at", "type": "uint256" }, { "internalType": "uint64", "name": "seed", "type": "uint64" }, { "internalType": "uint256", "name": "min", "type": "uint256" }, { "internalType": "uint256", "name": "max", "type": "uint256" }, { "internalType": "uint256", "name": "callback_gas", "type": "uint256" }, { "internalType": "address",  "name": "callback_address", "type": "address" }], "stateMutability": "view", "type": "function"}
 
 const ACCOUNT_STATE_TABLE = "accountstate";
 const EOSIO_EVM = "eosio.evm";
@@ -22,7 +23,7 @@ class RNGBridgeListener extends Listener {
     }
 
     async start() {
-        await super.startStream("RNG Oracle Bridge", EOSIO_EVM, ACCOUNT_STATE_TABLE, this.bridge.eosio_evm_scope, async(data) => {
+        await super.startStream("RNG Oracle Bridge", EOSIO_EVM, ACCOUNT_STATE_TABLE, this.bridge.eosio_evm_scope, false, async(data) => {
             if(this.counter == 11){
                 await this.notify();
                 this.counter = -1;
@@ -38,12 +39,8 @@ class RNGBridgeListener extends Listener {
 
     async doTableCheck(){
         let table_counter = 0;
-        await super.doTableCheck("RNG Oracle Bridge", EOSIO_EVM, this.bridge.eosio_evm_scope, ACCOUNT_STATE_TABLE, async() => {
-            if(table_counter === 11) { // Counter to get only new requests (we only need to call reqnotify once, it will check the table for all requests, but table already has base rows (other contract variable))
-                this.notify();
-            }
-            table_counter++;
-        });
+        // TODO: get array length with ethers, if > 0 call reqnotify();
+
     }
     async notify(){
         return await this.api.transact({
