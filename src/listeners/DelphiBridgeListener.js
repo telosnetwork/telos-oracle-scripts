@@ -30,7 +30,6 @@ class DelphiBridgeListener extends EVMListener {
         this.counter = -1;
       }
       this.counter++;
-      console.log(this.counter)
     });
 
     // RPC TABLE CHECK
