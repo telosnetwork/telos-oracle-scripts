@@ -24,22 +24,23 @@ class DelphiBridgeListener extends EVMListener {
   async start() {
     await super.startStream("Delphi Oracle Bridge", EOSIO_EVM, ACCOUNT_STATE_TABLE, this.bridge.eosio_evm_scope, async(data) => {
       // We use a counter because that table contains ALL EVM contract variables, not just the requests and requests also have several rows
-      if (this.counter == 11) {
+      if (this.counter == 15) {
         // Given we cannot define an appropriate number to count by (our requestCount mapping per address makes it variable depending if the caller already exists or not) we need to check the EVM contract to make sure we have a request
-        await this.doTableCheck(); // Check if requests are in EVM contract or not
+        await this.notify();
         this.counter = -1;
       }
       this.counter++;
+      console.log(this.counter)
     });
 
     // RPC TABLE CHECK
-    await this.doTableCheck();
+    await this.doCheck();
     setInterval(async () => {
-      await this.doTableCheck();
+      await this.doCheck();
     }, this.check_interval_ms)
   }
 
-  async doTableCheck(){
+  async doCheck(){
     this.log("Doing table check for Delphi Oracle Bridge...");
     try {
       const evm_contract = new ethers.Contract(this.bridge.eth_account, ABI, this.evm_provider);

@@ -29,20 +29,19 @@ class RNGBridgeListener extends EVMListener {
             // We use a counter because that table contains ALL EVM contract variables, not just the requests and requests also have several rows
             // Given we cannot define an exact number to count by (our requestCount mapping makes it variable depending if the caller already exists or not) we need to check the EVM contract to make sure we have a request
             if(this.counter == 11){
-                await this.doTableCheck(); // Check if requests are in EVM contract or not
+                await this.notify();
                 this.counter = -1;
             }
             this.counter++;
-            console.log(this.counter);
         })
         // RPC TABLE CHECK
-        await this.doTableCheck();
+        await this.doCheck();
         setInterval(async () => {
-            await this.doTableCheck();
+            await this.doCheck();
         }, this.check_interval_ms)
     }
 
-    async doTableCheck(){
+    async doCheck(){
         this.log("Doing table check for RNG Oracle Bridge...");
         try {
             const evm_contract = new ethers.Contract(this.bridge.eth_account, ABI, this.evm_provider);
