@@ -103,6 +103,7 @@ Endpoint configuration for EVM.
       bridge:
         account: "delphibridge"
         active: true
+        evm_contract: "0x0Af690bb090080fe7DC2E5864c6271402d534fDD"
         eosio_evm_scope: 36263 # Scope for eosio.evm accountstate table (index of EVM contract in eosio.evm account table)
         check_interval_ms: 30000 # This will override the general listeners one defined previously
 ```
