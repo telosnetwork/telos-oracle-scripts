@@ -14,8 +14,8 @@ class DelphiOracleCallbacks {
            // Success
        }
     }
-    onRequestFailure(id, error){
-        console.log('Request to', id, 'failed :', error.message);
+    onRequestFailure(updater, id, error){
+        updater.log('Request to', id, 'failed :', error.message);
     }
 }
 module.exports = DelphiOracleCallbacks;

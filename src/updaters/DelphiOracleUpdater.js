@@ -33,7 +33,7 @@ class DelphiOracleUpdater extends Updater {
                     callbackSuccess(this, service.id, data);
                 }).catch((e) => {
                     this.log('Request to ' + service.id + ' failed');
-                    callbackError(service.id, e);
+                    callbackError(this, service.id, e.message);
                 });
             }
         }, this.update_interval_ms);

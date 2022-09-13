@@ -27,7 +27,6 @@ class RNGBridgeListener extends EVMListener {
     async start() {
         await super.startStream("RNG Oracle Bridge", EOSIO_EVM, ACCOUNT_STATE_TABLE, this.bridge.eosio_evm_scope, async(data) => {
             // We use a counter because that table contains ALL EVM contract variables, not just the requests and requests also have several rows
-            // Given we cannot define an exact number to count by (our requestCount mapping makes it variable depending if the caller already exists or not) we need to check the EVM contract to make sure we have a request
             if(this.counter == 11){
                 await this.notify();
                 this.counter = -1;
