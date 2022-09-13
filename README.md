@@ -203,7 +203,7 @@ The `onRequestFailure(error)` callback will be called after a failed HTTP reques
     }
 ```
 
-Refer to the default logic inside `callbacks/DelphiUpdaterCallbacks.js` for an example.
+Refer to the default logic inside [callbacks/DelphiUpdaterCallbacks.js](https://github.com/telosnetwork/telos-oracle-scripts/blob/master/src/callbacks/DelphiOracleCallbacks.js) for an example.
 
 ## Run
 
