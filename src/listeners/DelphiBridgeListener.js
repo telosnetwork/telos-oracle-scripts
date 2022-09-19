@@ -39,15 +39,15 @@ class DelphiBridgeListener extends EVMListener {
   }
 
   async doCheck(){
-    this.log("Doing table check for Delphi Oracle Bridge...");
+    this.log("Delphi Oracle Bridge: Doing table check...");
     try {
       const evm_contract = new ethers.Contract(this.bridge.eth_account, ABI, this.evm_provider);
       const request = await evm_contract.requests(0);
       await this.notify();
-      this.log("Done doing table check for Delphi Oracle Bridge...");
+      this.log("Delphi Oracle Bridge: Done doing table check");
       return true;
     } catch (e) {
-      this.log("Table check for Delphi Oracle Bridge reverted, no requests found");
+      this.log("Delphi Oracle Bridge: Table check reverted, no requests found");
       return false;
     }
   }
@@ -63,9 +63,9 @@ class DelphiBridgeListener extends EVMListener {
         blocksBehind: 3,
         expireSeconds: 90,
       }).then(result => {
-        this.log('\nCalled reqnotify()');
+        this.log('\nDelphi Oracle Bridge: Called reqnotify()');
       }).catch(e => {
-        this.log('\nCaught exception: ' + e);
+        this.log('\nDelphi Oracle Bridge: Call failed. Caught exception: ' + e);
       });
   }
 }

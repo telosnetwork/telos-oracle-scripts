@@ -22,7 +22,7 @@ class RNGRequestListener extends Listener {
 
     async start() {
         if (typeof this.caller.signing_key === "undefined" ){
-            this.log('/!\\ Signing key is undefined. RNG Oracle Request script will not try to sign.')
+            this.log('/!\\ RNG Oracle Request: Signing key is undefined. RNG Oracle Request script will not try to sign.')
         }
         // HYPERION STREAM
         await super.startStream("RNG Oracle Request", this.oracle, REQUESTS_TABLE, this.oracle, async (data) => {
@@ -77,11 +77,11 @@ class RNGRequestListener extends Listener {
                 },
                 { blocksBehind: 10, expireSeconds: 60 }
             );
-            this.log(`Signed request ${row.request_id}`);
+            this.log(`RNG Oracle Request: Signed request ${row.request_id}`);
             this.removeProcessingRequest(row.request_id);
             return result;
         } catch (e) {
-            console.error(`Submitting signature for request ${row.request_id} failed: ${e}`);
+            console.error(`RNG Oracle Request: Submitting signature for request ${row.request_id} failed: ${e}`);
             this.removeProcessingRequest(row.request_id);
             return false;
         }

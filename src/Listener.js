@@ -23,7 +23,7 @@ class Listener {
 
     // RPC ANTELOPE TABLE CHECK
     async doTableCheck(name, account, scope, table, reverse, callback) {
-        this.log(`Doing table check for ${name}...`);
+        this.log(`${name}: Doing table check...`);
         const results = await this.rpc.get_table_rows({
             code: account,
             scope: scope,
@@ -34,7 +34,7 @@ class Listener {
         results.rows.forEach(async(row) => {
             await callback(row);
         });
-        this.log(`Done doing table check for ${name} !`);
+        this.log(`${name}: Done doing table check !`);
     }
 
     // HYPERION STREAM
@@ -67,7 +67,7 @@ class Listener {
             ack();
         };
         this.streamClient.connect(() => {
-            this.log("Connected to Hyperion Stream for " + name + "...");
+            this.log(`${name}: Connected to Hyperion Stream...`);
         });
 
         let interval = setInterval(async () => {
@@ -75,7 +75,7 @@ class Listener {
                 let getInfo = await this.rpc.get_info();
                 if(this.max_block_diff < ( getInfo.head_block_num - this.streamClient.lastReceivedBlock)){
                     clearInterval(interval);
-                    this.log("Restarting stream for " + name + "...");
+                    this.log(`${name}: Restarting stream...`);
                     this.streamClient.disconnect();
                     await this.startStream(name, account, table, scope, callback);
                 }

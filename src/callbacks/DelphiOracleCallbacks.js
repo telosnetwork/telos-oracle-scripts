@@ -10,12 +10,13 @@ class DelphiOracleCallbacks {
        const result = await updater.send();
        if(result === false){
            // Handle failure
+           updater.quotes = [];
         } else {
            // Success
        }
     }
     onRequestFailure(updater, id, error){
-        updater.log('Request to', id, 'failed :', error.message);
+        updater.log('Delphi Oracle Updater: Request to', id, 'failed :', error.message);
     }
 }
 module.exports = DelphiOracleCallbacks;

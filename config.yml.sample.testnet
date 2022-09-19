@@ -1,10 +1,10 @@
 # ANTELOPE GENRAL CONFIG
 antelope:
-  oracle:
+  caller:
     name: "oracletest"
     permission: "active"
-    private_key: "5J2wq..."
-    signing_key: "5J2wq..."
+    private_key: "5J2wq...."
+    signing_key: "5J2wq...."
   rpc: "https://testnet.telos.caleos.io"
   hyperion: "https://testnet.telos.caleos.io"
 
@@ -25,6 +25,7 @@ scripts:
       bridge:
         account: "delphibridge"
         active: true
+        evm_contract: "0x0Af690bb090080fe7DC2E5864c6271402d534fDD"
         eosio_evm_scope: 36263
         check_interval_ms: 30000
     rng:
@@ -53,7 +54,6 @@ scripts:
       update_interval_ms: 3000
       account: "delphioracle"
       services:
-        - id: 'coingecko-tlosusd'
-          url: 'https://'
-        - id: 'coingecko-tloseos'
-          url: 'https://'
+        - id: 'coingecko'
+          url: 'https://api.coingecko.com/api/v3/simple/price?ids=telos&vs_currencies=usd%2Ceos%2Ceth'
+          response_type: "json"

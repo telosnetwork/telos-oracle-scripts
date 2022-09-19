@@ -29,7 +29,7 @@ class GasListener extends EVMListener {
 
     async doCheck() {
         let gas_price, evm_contract_gas_price = 0;
-        this.log("Checking gas prices...")
+        this.log("Gas Oracle Bridge: Checking gas prices...")
         // Get gas price from eosio.evm using TelosEVMApi
         try {
             gas_price = BigNumber.from(`0x${await this.evm_api.telos.getGasPrice()}`)
@@ -48,7 +48,7 @@ class GasListener extends EVMListener {
         }
 
         if(gas_price.eq(evm_contract_gas_price) === false){
-            this.log(`Updating gas price...`);
+            this.log(`Gas Oracle Bridge: Updating gas price...`);
             this.api.transact({
                 actions: [{
                     account: this.bridge.antelope_account,
@@ -60,12 +60,12 @@ class GasListener extends EVMListener {
                 blocksBehind: 3,
                 expireSeconds: 90,
             }).then(result => {
-                this.log(`Updated gas price !`);
+                this.log(`Gas Oracle Bridge: Updated gas price !`);
             }).catch(e => {
-                this.log('Failed, caught exception: ' + e);
+                this.log('Gas Oracle Bridge: Update failed, caught exception: ' + e);
             });
         } else {
-            this.log(`No update needed for gas price`);
+            this.log(`Gas Oracle Bridge: No update needed for gas price`);
         }
     }
 

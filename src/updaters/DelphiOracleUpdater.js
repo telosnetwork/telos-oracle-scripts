@@ -29,10 +29,10 @@ class DelphiOracleUpdater extends Updater {
                     } else {
                         data = await response.text();
                     }
-                    this.log('Request to '+ service.id + ' succeeded');
+                    this.log('Delphi Oracle Updater: Request to '+ service.id + ' succeeded');
                     callbackSuccess(this, service.id, data);
                 }).catch((e) => {
-                    this.log('Request to ' + service.id + ' failed');
+                    this.log('Delphi Oracle Updater: Request to ' + service.id + ' failed');
                     callbackError(this, service.id, e.message);
                 });
             }
@@ -42,8 +42,10 @@ class DelphiOracleUpdater extends Updater {
         if(this.quotes.length === 0 || !this.caller.name){
             return;
         }
+        this.log("Delphi Oracle Updater: Sending quotes...")
+        this.log(this.quotes)
         try {
-            return await this.api.transact({
+            const result = await this.api.transact({
                 actions: [{
                     account: 'delphioracle',
                     name: 'write',
@@ -60,8 +62,11 @@ class DelphiOracleUpdater extends Updater {
                 blocksBehind: 3,
                 expireSeconds: 60,
             });
+            if(result){
+                this.quotes = [];
+            }
         } catch (e) {
-           this.log(e.message);
+           this.log("Delphi Oracle Updater: " + e.message);
            return false;
         }
     }
