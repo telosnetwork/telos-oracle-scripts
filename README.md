@@ -175,7 +175,7 @@ _After adding services you will need to customize the Delphi Updater to handle t
 
 ## Customize the Delphi Updater
 
-The Delphi Oracle Updater contains a minimal implementation to get TLOS's USD, EOS & ETH prices from coingecko. 
+The Delphi Oracle Updater contains a minimal implementation to get TLOS's USD & EOS prices as well as BTC's USD price from coingecko. 
 You can replace it and implement your own logic inside the [callbacks/DelphiUpdaterCallbacks.js](https://github.com/telosnetwork/telos-oracle-scripts/blob/master/src/callbacks/DelphiOracleCallbacks.js) file
 
 ### onRequestSuccess
