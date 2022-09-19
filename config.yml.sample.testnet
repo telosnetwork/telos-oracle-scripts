@@ -55,5 +55,5 @@ scripts:
       account: "delphioracle"
       services:
         - id: 'coingecko'
-          url: 'https://api.coingecko.com/api/v3/simple/price?ids=telos&vs_currencies=usd%2Ceos%2Ceth'
+          url: 'https://api.coingecko.com/api/v3/simple/price?ids=telos&vs_currencies=usd%2Ceos%2Cbtc'
           response_type: "json"

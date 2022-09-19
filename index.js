@@ -50,7 +50,7 @@ if(listeners.delphi.bridge.active){
 if(updaters.delphi.active){
     const delphiOracleUpdater = new DelphiOracleUpdater(updaters.delphi.account, config, updaters.delphi, api)
     const callbacks = new DelphiOracleCallbacks();
-    delphiOracleUpdater.start(callbacks.onRequestSuccess.bind(this), callbacks.onRequestFailure.bind(this));
+    delphiOracleUpdater.start(callbacks.onRequestSuccess, callbacks.onRequestFailure);
 }
 // RNG Bridge Listener
 if(listeners.rng.bridge.active){

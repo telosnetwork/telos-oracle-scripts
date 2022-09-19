@@ -10,7 +10,7 @@ class Updater {
         this.api = api;
         this.console_log = config.scripts.updaters.console_log ? true : false;
     }
-    log(message){
+    log(message, error){
         if(this.console_log) console.log(message);
     }
 }

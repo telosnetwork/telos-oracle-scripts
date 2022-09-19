@@ -30,15 +30,16 @@ class DelphiOracleUpdater extends Updater {
                         data = await response.text();
                     }
                     this.log('Delphi Oracle Updater: Request to '+ service.id + ' succeeded');
-                    callbackSuccess(this, service.id, data);
+                    await callbackSuccess(this, service.id, data);
                 }).catch((e) => {
-                    this.log('Delphi Oracle Updater: Request to ' + service.id + ' failed');
-                    callbackError(this, service.id, e.message);
+                    this.log('Delphi Oracle Updater: Request to ' + service.id + ' failed >>> ' + e.message);
+                    () => callbackError(this, service.id, e.message);
                 });
             }
         }, this.update_interval_ms);
     }
-    async send(){
+    async send(quotes){
+        this.quotes = (quotes.length > 0) ? quotes : this.quotes;
         if(this.quotes.length === 0 || !this.caller.name){
             return;
         }
@@ -66,7 +67,7 @@ class DelphiOracleUpdater extends Updater {
                 this.quotes = [];
             }
         } catch (e) {
-           this.log("Delphi Oracle Updater: " + e.message);
+           this.log("Delphi Oracle Updater: " + e.message, true);
            return false;
         }
     }
