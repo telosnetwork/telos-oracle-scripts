@@ -13,7 +13,7 @@ class ConfigLoader {
                     },
                     {
                         name: 'bridge',
-                        children: ["eosio_evm_scope", "account, "evm_contract"]
+                        children: ["eosio_evm_scope", "account", "evm_contract"]
                     }
                 ]
             },
