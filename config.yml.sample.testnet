@@ -19,39 +19,39 @@ scripts:
   listeners:
     console_log: true
     max_block_diff: 1200 # Restart stream if it hasn't received data since X blocks... (1200 / 2 = 600s = 10mn)
-    check_interval_ms: 30000 # Check table every X to make sure stream didn't miss anything
+    check_interval_ms: 10000 # Check table every X to make sure stream didn't miss anything
     delphi:
       account: "delphioracle"
       bridge:
         account: "delphibridge"
-        active: true
+        active: false
         evm_contract: "0x0Af690bb090080fe7DC2E5864c6271402d534fDD"
         eosio_evm_scope: 36263
-        check_interval_ms: 30000
+        check_interval_ms: 10000
     rng:
       account: "rng.oracle"
       request:
         active: true
-        check_interval_ms: 30000
+        check_interval_ms: 10000
       bridge:
-        active: true
+        active: false
         account: "rng.bridge"
         linked_evm_address: "0x63c910d38a4717abe48f923d873314b9260e6dab"
         eosio_evm_scope: 36255
         evm_contract: "0xcbB8a0e3Ec07A8baB91CCAA6E1F368AB919acd30"
-        check_interval_ms: 30000
+        check_interval_ms: 10000
     gas:
       account: "eosio.evm"
       bridge:
-        active: true
+        active: false
         check_interval_ms: 3000
         evm_contract: "0x648ac5a8c4E1ae5A93cd5BeDF143B095B8c49a2a"
         account: "gasbridge"
   updaters:
     console_log: true
     delphi:
-      active: true
-      update_interval_ms: 3000
+      active: false
+      update_interval_ms: 5000
       account: "delphioracle"
       services:
         - id: 'coingecko'

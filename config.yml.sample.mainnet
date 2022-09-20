@@ -5,8 +5,8 @@ antelope:
     permission: "active"
     private_key: "5J2wq...."
     signing_key: "5J2wq...."
-  rpc: "https://testnet.telos.caleos.io"
-  hyperion: "https://testnet.telos.caleos.io"
+  rpc: "https://telos.caleos.io"
+  hyperion: "https://telos.caleos.io"
 
 # EVM GENRAL CONFIG
 evm:
@@ -18,8 +18,8 @@ evm:
 scripts:
   listeners:
     console_log: true
-    max_block_diff: 1200 # Restart stream if it hasn't received data since X blocks... (1200 / 2 = 600s = 10mn)
-    check_interval_ms: 30000 # Check table every X to make sure stream didn't miss anything
+    max_block_diff: 600 # Restart stream if it hasn't received data since X blocks... (600 / 2 = 300s = 5mn)
+    check_interval_ms: 15000 # Check table every X ms to make sure stream didn't miss anything
     delphi:
       account: "delphioracle"
       bridge:
@@ -27,19 +27,19 @@ scripts:
         active: false
         evm_contract: "0x0Af690bb090080fe7DC2E5864c6271402d534fDD"
         eosio_evm_scope: 36263
-        check_interval_ms: 30000
+        check_interval_ms: 15000
     rng:
       account: "rng.oracle"
       request:
         active: true
-        check_interval_ms: 30000
+        check_interval_ms: 15000
       bridge:
         active: false
         account: "rng.bridge"
         linked_evm_address: "0x63c910d38a4717abe48f923d873314b9260e6dab"
         eosio_evm_scope: 36255
         evm_contract: "0xcbB8a0e3Ec07A8baB91CCAA6E1F368AB919acd30"
-        check_interval_ms: 30000
+        check_interval_ms: 15000
     gas:
       account: "eosio.evm"
       bridge:
@@ -51,7 +51,7 @@ scripts:
     console_log: true
     delphi:
       active: false
-      update_interval_ms: 3000
+      update_interval_ms: 5000
       account: "delphioracle"
       services:
         - id: 'coingecko'
