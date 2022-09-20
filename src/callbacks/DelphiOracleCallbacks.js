@@ -12,7 +12,7 @@ class DelphiOracleCallbacks {
     // id => the id of the service as defined in configuration
     // response => the response from the service URL, parsed according to response type defined in config
     async onRequestSuccess(updater, id, response) {
-       // Example implementation, implement your own ...
+       // Example implementation, implement your own code here...
 
        // Parse response for quotes
         let quotes = [];
@@ -39,7 +39,7 @@ class DelphiOracleCallbacks {
     // id => the id of the service as defined in configuration
     // error => the error object
     onRequestFailure(updater, id, error){
-        // Example implementation, implement your own ...
+        // Example implementation, implement your own code here...
     }
 
     // Example utils...

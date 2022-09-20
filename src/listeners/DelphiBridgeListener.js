@@ -24,7 +24,7 @@ class DelphiBridgeListener extends EVMListener {
   async start() {
     await super.startStream("Delphi Oracle Bridge", EOSIO_EVM, ACCOUNT_STATE_TABLE, this.bridge.eosio_evm_scope, async(data) => {
       // We use a counter because that table contains ALL EVM contract variables, not just the requests and requests also have several rows
-      if (this.counter == 15) {
+      if (this.counter == 11) {
         await this.notify();
         this.counter = -1;
       }
@@ -63,9 +63,9 @@ class DelphiBridgeListener extends EVMListener {
         blocksBehind: 3,
         expireSeconds: 90,
       }).then(result => {
-        this.log('\nDelphi Oracle Bridge: Called reqnotify()');
+        this.log('Delphi Oracle Bridge: Request(s) found. Called reqnotify()');
       }).catch(e => {
-        this.log('\nDelphi Oracle Bridge: Call failed. Caught exception: ' + e);
+        this.log('Delphi Oracle Bridge:  Request(s) found but call to reqnotify() failed. Caught exception: ' + e);
       });
   }
 }

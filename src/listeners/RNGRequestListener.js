@@ -78,7 +78,10 @@ class RNGRequestListener extends Listener {
                 { blocksBehind: 10, expireSeconds: 60 }
             );
             this.log(`RNG Oracle Request: Signed request ${row.request_id}`);
-            this.removeProcessingRequest(row.request_id);
+            let ctx = this;
+            setTimeout(function () {
+                ctx.removeProcessingRequest(row.request_id);
+            }, 2000)
             return result;
         } catch (e) {
             console.error(`RNG Oracle Request: Submitting signature for request ${row.request_id} failed: ${e}`);
