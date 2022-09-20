@@ -29,7 +29,7 @@ class ConfigLoader {
                 name: 'gas',
                 children: [
                     {name: 'account' },
-                    {name: 'bridge', children: ["account", "check_interval_ms"] }
+                    {name: 'bridge', children: ["account"] }
                 ]
             }
         ];
@@ -39,7 +39,6 @@ class ConfigLoader {
                 children: [
                     {name: 'services'},
                     {name: 'account'},
-                    {name: 'update_interval_ms'}
                 ]
             }
         ];
