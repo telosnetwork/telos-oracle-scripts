@@ -38,7 +38,7 @@ class ConfigLoader {
                 name: 'delphi',
                 children: [
                     {name: 'services'},
-                    {name: 'account'},
+                    {name: 'account'}
                 ]
             }
         ];
