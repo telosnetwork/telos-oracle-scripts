@@ -1,5 +1,6 @@
 const HyperionStreamClient = require("@eosrio/hyperion-stream-client").default;
 const fetch = require("node-fetch");
+const nameToNumber = require('./utils/anteloppeName');
 
 class Listener {
     constructor(
@@ -61,7 +62,7 @@ class Listener {
         };
         this.streamClient.onData = async (data, ack) => {
             this.streamClient.lastReceivedBlock = data.block_num;
-            if (data.content.present) {
+            if (data.content.present && scope === parseInt(nameToNumber(data.content.scope).toString())) {
                 await callback(data);
             }
             ack();
