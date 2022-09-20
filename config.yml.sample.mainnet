@@ -17,7 +17,7 @@ evm:
 # SCRIPTS CONFIG
 scripts:
   listeners:
-    console_log: true
+    console_log: false
     max_block_diff: 600 # Restart stream if it hasn't received data since X blocks... (600 / 2 = 300s = 5mn)
     check_interval_ms: 15000 # Check table every X ms to make sure stream didn't miss anything
     delphi:
@@ -48,12 +48,12 @@ scripts:
         evm_contract: "0x648ac5a8c4E1ae5A93cd5BeDF143B095B8c49a2a"
         account: "gasbridge"
   updaters:
-    console_log: true
+    console_log: false
     delphi:
       active: false
       update_interval_ms: 5000
       account: "delphioracle"
       services:
         - id: 'coingecko'
-          url: 'https://api.coingecko.com/api/v3/simple/price?ids=telos&vs_currencies=usd%2Ceos%2Ceth'
+          url: 'https://api.coingecko.com/api/v3/simple/price?ids=telos&vs_currencies=usd%2Ceos'
           response_type: "json"

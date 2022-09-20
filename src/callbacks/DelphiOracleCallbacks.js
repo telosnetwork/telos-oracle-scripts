@@ -8,7 +8,7 @@ class DelphiOracleCallbacks {
 
     // onRequestSuccess
     // Triggered on a succesfull request to the configured services
-    // updater => our DelphiOracleUpdater with its send([]) method
+    // updater => our DelphiOracleUpdater with its send([{'pair': '', 'value': ''}]) method
     // id => the id of the service as defined in configuration
     // response => the response from the service URL, parsed according to response type defined in config
     async onRequestSuccess(updater, id, response) {
@@ -21,8 +21,6 @@ class DelphiOracleCallbacks {
                 if(!response.telos) break;
                 quotes.push({"pair": "tlosusd", "value": this.formatValue(response.telos.usd)});
                 quotes.push({"pair": "tloseos", "value":  this.formatValue(response.telos.eos)});
-                if(!response.bitcoin) break;
-                quotes.push({"pair": "btcusd", "value": this.formatValue(response.bitcoin.usd)});
                 break;
         }
 
@@ -37,12 +35,11 @@ class DelphiOracleCallbacks {
 
     // onRequestFailure
     // Triggered on a failed request to the configured services
-    // updater => our DelphiOracleUpdater with its send([]) method
+    // updater => our DelphiOracleUpdater
     // id => the id of the service as defined in configuration
     // error => the error object
     onRequestFailure(updater, id, error){
         // Example implementation, implement your own ...
-        updater.log('Delphi Oracle Updater: Request to', id, 'failed :', error.message); // Log using updater for log control via config
     }
 
     // Example utils...
