@@ -29,7 +29,7 @@ class ConfigLoader {
                 name: 'gas',
                 children: [
                     {name: 'account' },
-                    {name: 'bridge', children: ["account"] }
+                    {name: 'bridge', children: ["account", "evm_contract"] }
                 ]
             }
         ];
