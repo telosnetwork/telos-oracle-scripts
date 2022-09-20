@@ -175,7 +175,7 @@ _After adding services you will need to customize the Delphi Updater to handle t
 
 ## Customize the Delphi Updater
 
-The Delphi Oracle Updater contains a minimal implementation to get TLOS's USD, EOS & ETH prices from coingecko. 
+The Delphi Oracle Updater contains a minimal implementation to get TLOS's USD & EOS prices as well as BTC's USD price from coingecko. 
 You can replace it and implement your own logic inside the [callbacks/DelphiUpdaterCallbacks.js](https://github.com/telosnetwork/telos-oracle-scripts/blob/master/src/callbacks/DelphiOracleCallbacks.js) file
 
 ### onRequestSuccess
@@ -189,9 +189,9 @@ You should implement your own code here to parse the response and then use the `
     }
 ```
 
-To send quotes use `updater.addQuote({'value': 'VALUE HERE', 'pair': 'PAIR HERE'})` followed by `updater.send()`
+To send quotes use `updater.send([{'value': 'VALUE HERE', 'pair': 'PAIR HERE'}])`
 
-You can add as many quotes as you want before calling `updater.send()` and you can reset the quotes with `updater.quotes = []` or `updater.resetQuotes()` if needed but note that quotes will be reseted automatically already on sucessfull send.
+You can add as many quotes as you want to that array.
 
 Refer to the default logic inside [callbacks/DelphiUpdaterCallbacks.js](https://github.com/telosnetwork/telos-oracle-scripts/blob/master/src/callbacks/DelphiOracleCallbacks.js) for an example.
 
