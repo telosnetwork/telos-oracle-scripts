@@ -24,7 +24,7 @@ class DelphiBridgeListener extends EVMListener {
   async start() {
     await super.startStream("Delphi Oracle Bridge", EOSIO_EVM, ACCOUNT_STATE_TABLE, this.bridge.eosio_evm_scope, async(data) => {
       // We use a counter because that table contains ALL EVM contract variables, not just the requests and requests also have several rows
-      if (this.counter == 11) {
+      if (this.counter === 10) {
         await this.notify();
         this.counter = -1;
       }
