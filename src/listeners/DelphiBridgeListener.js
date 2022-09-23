@@ -19,6 +19,7 @@ class DelphiBridgeListener extends EVMListener {
     if(conf.check_interval_ms){
       this.check_interval_ms = conf.check_interval_ms; // Override base interval
     }
+    this.notifying = false;
   }
 
   async start() {
@@ -39,35 +40,40 @@ class DelphiBridgeListener extends EVMListener {
   }
 
   async doCheck(){
-    this.log("Delphi Oracle Bridge: Doing table check...");
+    this.log("Delphi Oracle Bridge: Doing direct check...");
     try {
       const evm_contract = new ethers.Contract(this.bridge.eth_account, ABI, this.evm_provider);
       const request = await evm_contract.requests(0);
       await this.notify();
-      this.log("Delphi Oracle Bridge: Done doing table check");
+      this.log("Delphi Oracle Bridge: Done doing direct check");
       return true;
     } catch (e) {
-      this.log("Delphi Oracle Bridge: Table check reverted, no requests found");
+      this.log("Delphi Oracle Bridge: Direct check reverted, no requests found");
       return false;
     }
   }
   async notify(){
-    return await this.api.transact({
-        actions: [{
-          account: this.bridge.antelope_account,
-          name: 'reqnotify',
-          authorization: [{ actor: this.caller.name, permission: this.caller.permission }],
-          data: {},
-        }]
-      }, {
-        blocksBehind: 3,
-        expireSeconds: 90,
-      }).then(result => {
-        this.log('Delphi Oracle Bridge: Request(s) found. Called reqnotify()');
-      }).catch(e => {
-        this.log('Delphi Oracle Bridge:  Request(s) found but call to reqnotify() failed. Caught exception: ' + e);
-      });
-  }
+    if(this.notifying === false){
+        this.notifying = true;
+        return await this.api.transact({
+          actions: [{
+            account: this.bridge.antelope_account,
+            name: 'reqnotify',
+            authorization: [{ actor: this.caller.name, permission: this.caller.permission }],
+            data: {},
+          }]
+        }, {
+          blocksBehind: 3,
+          expireSeconds: 90,
+        }).then(result => {
+          this.log('Delphi Oracle Bridge: Request(s) found. Called reqnotify()');
+          this.notifying = false;
+        }).catch(e => {
+          this.log('Delphi Oracle Bridge:  Request(s) found but call to reqnotify() failed. Caught exception: ' + e);
+          this.notifying = false;
+        });
+      }
+    }
 }
 
 module.exports = DelphiBridgeListener;

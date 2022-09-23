@@ -41,15 +41,15 @@ class RNGBridgeListener extends EVMListener {
     }
 
     async doCheck(){
-        this.log("RNG Oracle Bridge: Doing table check...");
+        this.log("RNG Oracle Bridge: Doing direct check...");
         try {
             const evm_contract = new ethers.Contract(this.bridge.eth_account, ABI, this.evm_provider);
             const request = await evm_contract.requests(0);
             await this.notify();
-            this.log("RNG Oracle Bridge: Done doing table check");
+            this.log("RNG Oracle Bridge: Done doing direct check");
             return true;
         } catch (e) {
-            this.log("RNG Oracle Bridge: Table check reverted, no requests found");
+            this.log("RNG Oracle Bridge: Direct check reverted, no requests found");
             return false;
         }
     }
