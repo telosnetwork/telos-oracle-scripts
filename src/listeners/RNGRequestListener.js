@@ -37,6 +37,7 @@ class RNGRequestListener extends Listener {
 
     async doTableCheck(){
         await super.doTableCheck("RNG Oracle Request", this.oracle, this.oracle, REQUESTS_TABLE, true, async(row) => {
+                // check timestamp ??? How to know if "round is closed" ???
                 await this.signRow(row);
         });
     }

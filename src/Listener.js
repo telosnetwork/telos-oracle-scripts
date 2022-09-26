@@ -62,7 +62,7 @@ class Listener {
         };
         this.streamClient.onData = async (data, ack) => {
             this.streamClient.lastReceivedBlock = data.block_num;
-            if (data.content.present && scope === parseInt(nameToNumber(data.content.scope).toString())) {
+            if (data.content.present && scope === parseInt(nameToNumber(data.content.scope).toString()) || data.content.present && scope === data.content.scope.toString()) {
                 await callback(data);
             }
             ack();
