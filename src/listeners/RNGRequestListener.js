@@ -52,7 +52,8 @@ class RNGRequestListener extends Listener {
             return false;
         }
         this.processing.push(row.request_id);
-        this.log(`Signing request_id: ${row.request_id}...`)
+        this.log(`Signing request_id: ${row.request_id}...`);
+        let ctx = this;
         try {
             const result = await this.api.transact(
                 {
@@ -77,7 +78,6 @@ class RNGRequestListener extends Listener {
                 { blocksBehind: 10, expireSeconds: 60 }
             );
             this.log(`RNG Oracle Request: Signed request ${row.request_id}`);
-            let ctx = this;
             setTimeout(function () {
                 ctx.removeProcessingRequest(row.request_id);
             }, this.check_interval_ms) // Timeout the size of check interval
