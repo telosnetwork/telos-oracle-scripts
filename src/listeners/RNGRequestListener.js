@@ -36,10 +36,8 @@ class RNGRequestListener extends Listener {
     }
 
     async doTableCheck(){
-        await super.doTableCheck("RNG Oracle Request", this.oracle, this.oracle, REQUESTS_TABLE, false, async(row) => {
-            if(!row.sig2 || row.sig2 === '' || row.oracle2 === "eosio.null"){
+        await super.doTableCheck("RNG Oracle Request", this.oracle, this.oracle, REQUESTS_TABLE, true, async(row) => {
                 await this.signRow(row);
-            }
         });
     }
 
@@ -85,7 +83,9 @@ class RNGRequestListener extends Listener {
             return result;
         } catch (e) {
             console.error(`RNG Oracle Request: Submitting signature for request ${row.request_id} failed: ${e}`);
-            this.removeProcessingRequest(row.request_id);
+            setTimeout(function () {
+                ctx.removeProcessingRequest(row.request_id);
+            }, 1200000) // Big timeout so we don't retry endlessly if there is a request stuck
             return false;
         }
     }
