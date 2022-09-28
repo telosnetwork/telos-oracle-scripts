@@ -29,7 +29,7 @@ class Listener {
             code: account,
             scope: scope,
             table: table,
-            limit: 1000,
+            limit: 500,
             reverse: reverse
         });
         results.rows.forEach(async(row) => {

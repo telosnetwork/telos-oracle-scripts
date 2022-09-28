@@ -65,9 +65,9 @@ class RNGBridgeListener extends EVMListener {
             blocksBehind: 3,
             expireSeconds: 90,
         }).then(result => {
-            this.log('\nRNG Oracle Bridge: Called reqnotify() successfully !');
+            this.log('RNG Oracle Bridge: Called reqnotify() successfully !');
         }).catch(e => {
-            this.log('\nRNG Oracle Bridge: Call failed. Caught exception: ' + e);
+            this.log('RNG Oracle Bridge: Call failed. Caught exception: ' + e);
         });
     }
 }

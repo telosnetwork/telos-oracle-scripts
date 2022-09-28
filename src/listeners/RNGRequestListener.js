@@ -37,8 +37,9 @@ class RNGRequestListener extends Listener {
 
     async doTableCheck(){
         await super.doTableCheck("RNG Oracle Request", this.oracle, this.oracle, REQUESTS_TABLE, true, async(row) => {
-                // check timestamp ??? How to know if "round is closed" ???
+            if(!row.sig2 || row.sig2 === ""){
                 await this.signRow(row);
+            }
         });
     }
 
@@ -52,7 +53,7 @@ class RNGRequestListener extends Listener {
             return false;
         }
         this.processing.push(row.request_id);
-        this.log(`Signing request_id: ${row.request_id}...`);
+        this.log(`RNG Oracle Request: Signing request_id: ${row.request_id}...`);
         let ctx = this;
         try {
             const result = await this.api.transact(
@@ -85,7 +86,7 @@ class RNGRequestListener extends Listener {
         } catch (e) {
             console.error(`RNG Oracle Request: Submitting signature for request ${row.request_id} failed: ${e}`);
             setTimeout(function () {
-                ctx.removeProcessingRequest(row.request_id);
+                //ctx.removeProcessingRequest(row.request_id);
             }, 1200000) // Big timeout so we don't retry endlessly if there is a request stuck
             return false;
         }
