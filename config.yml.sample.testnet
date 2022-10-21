@@ -24,7 +24,7 @@ scripts:
       account: "delphioracle"
       bridge:
         account: "delphibridge"
-        active: true
+        active: false
         evm_contract: "0x4D980DeB321E50af39E58551D123831A21Bc4508"
         eosio_evm_scope: 36467
         check_interval_ms: 15000
@@ -34,7 +34,7 @@ scripts:
         active: true
         check_interval_ms: 15000
       bridge:
-        active: true
+        active: false
         account: "rng.bridge"
         linked_evm_address: "0x63c910d38a4717abe48f923d873314b9260e6dab"
         eosio_evm_scope: 36569
@@ -43,7 +43,7 @@ scripts:
     gas:
       account: "eosio.evm"
       bridge:
-        active: true
+        active: false
         check_interval_ms: 3000
         evm_contract: "0x648ac5a8c4E1ae5A93cd5BeDF143B095B8c49a2a"
         account: "gasbridge"
