@@ -48,7 +48,7 @@ class DelphiBridgeListener extends EVMListener {
       this.log("Delphi Oracle Bridge: Done doing direct EVM contract check");
       return true;
     } catch (e) {
-      this.log("Delphi Oracle Bridge: Direct EVM contract check reverted, no requests found");
+      this.log("Delphi Oracle Bridge: Direct EVM contract check reverted, presuming no requests were found");
       return false;
     }
   }

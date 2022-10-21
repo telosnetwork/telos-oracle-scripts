@@ -43,7 +43,7 @@ const updaters = config.scripts.updaters;
 
 // Delphi Bridge Listener
 if(listeners.delphi.bridge.active){
-    const delphiBridgeListener = new DelphiBridgeListener(listeners.delphi.account, rpc, api, evm_provider, evm_api, config, {"antelope_account": listeners.delphi.bridge.account, "eosio_evm_scope" : listeners.delphi.bridge.eosio_evm_scope, "eth_account": listeners.delphi.bridge.evm_contract })
+    const delphiBridgeListener = new DelphiBridgeListener(listeners.delphi.account, rpc, api, evm_provider, evm_api, config, {"antelope_account": listeners.delphi.bridge.account, "eosio_evm_scope" : listeners.delphi.bridge.eosio_evm_scope, "eth_account": listeners.delphi.bridge.evm_contract.toLowerCase() })
     delphiBridgeListener.start();
 }
 // Delphi Updater
@@ -54,7 +54,7 @@ if(updaters.delphi.active){
 }
 // RNG Bridge Listener
 if(listeners.rng.bridge.active){
-    const rngBridgeListener = new RNGBridgeListener(listeners.rng.account, rpc, api, evm_provider, evm_api, config, {"antelope_account": listeners.rng.bridge.account, "eosio_evm_scope" : listeners.rng.bridge.eosio_evm_scope, "eth_account": listeners.rng.bridge.evm_contract })
+    const rngBridgeListener = new RNGBridgeListener(listeners.rng.account, rpc, api, evm_provider, evm_api, config, {"antelope_account": listeners.rng.bridge.account, "eosio_evm_scope" : listeners.rng.bridge.eosio_evm_scope, "eth_account": listeners.rng.bridge.evm_contract.toLowerCase() })
     rngBridgeListener.start();
 }
 // RNG Requests Listener
@@ -64,6 +64,6 @@ if(listeners.rng.request.active){
 }
 // Gas Bridge Listener
 if(listeners.gas.bridge.active){
-    const gasBridgeListener = new GasBridgeListener(listeners.gas.account, rpc, api, evm_provider, evm_api, config, {"antelope_account": listeners.gas.bridge.account, "eth_account": listeners.gas.bridge.evm_contract })
+    const gasBridgeListener = new GasBridgeListener(listeners.gas.account, rpc, api, evm_provider, evm_api, config, {"antelope_account": listeners.gas.bridge.account, "eth_account": listeners.gas.bridge.evm_contract.toLowerCase() })
     gasBridgeListener.start();
 }
