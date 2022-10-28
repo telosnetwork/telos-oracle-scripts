@@ -20,22 +20,38 @@ class Listener {
         this.console_log = (config.scripts.listeners.console_log) ? true : false;
         this.api = api;
         this.counter = 0;
+        this.checking_table = false;
     }
 
     // RPC ANTELOPE TABLE CHECK
     async doTableCheck(name, account, scope, table, reverse, callback) {
-        this.log(`${name}: Doing table check...`);
-        const results = await this.rpc.get_table_rows({
-            code: account,
-            scope: scope,
-            table: table,
-            limit: 500,
-            reverse: reverse
-        });
-        results.rows.forEach(async(row) => {
-            await callback(row);
-        });
-        this.log(`${name}: Done doing table check !`);
+        if(this.checking_table === false){
+            this.log(`${name}: Doing table check...`);
+            this.checking_table = true;
+            let nexKey = '';
+            let more = true;
+            while(more){
+                const results = await this.rpc.get_table_rows({
+                    code: account,
+                    scope: scope,
+                    table: table,
+                    limit: 500,
+                    lower_bound: nextKey,
+                    reverse: reverse
+                });
+                results.rows.forEach(async(row) => {
+                    await callback(row);
+                });
+                if (results.more && results.more !== '') {
+                    more = true;
+                    nextKey = results.more;
+                } else {
+                    more = false;
+                }
+            }
+            this.checking_table = false;
+            this.log(`${name}: Done doing table check !`);
+        }
     }
 
     // HYPERION STREAM
