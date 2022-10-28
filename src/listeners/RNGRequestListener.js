@@ -36,7 +36,7 @@ class RNGRequestListener extends Listener {
     }
 
     async doTableCheck(){
-        await super.doTableCheck("RNG Oracle Request", this.oracle, this.oracle, REQUESTS_TABLE, true, async(row) => {
+        await super.doTableCheck("RNG Oracle Request", this.oracle, this.oracle, REQUESTS_TABLE, false, async(row) => {
             await this.signRow(row);
         });
     }

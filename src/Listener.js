@@ -21,6 +21,7 @@ class Listener {
         this.api = api;
         this.counter = 0;
         this.checking_table = false;
+        this.next_key = '';
     }
 
     // RPC ANTELOPE TABLE CHECK
@@ -28,25 +29,28 @@ class Listener {
         if(this.checking_table === false){
             this.log(`${name}: Doing table check...`);
             this.checking_table = true;
-            let nexKey = '';
             let more = true;
             while(more){
-                const results = await this.rpc.get_table_rows({
-                    code: account,
-                    scope: scope,
-                    table: table,
-                    limit: 500,
-                    lower_bound: nextKey,
-                    reverse: reverse
-                });
-                results.rows.forEach(async(row) => {
-                    await callback(row);
-                });
-                if (results.more && results.more !== '') {
-                    more = true;
-                    nextKey = results.more;
-                } else {
+                try {
+                    const results = await this.rpc.get_table_rows({
+                        code: account,
+                        scope: scope,
+                        table: table,
+                        limit: 500,
+                        lower_bound: this.next_key
+                    });
+                    results.rows.forEach(async(row) => {
+                        await callback(row);
+                    });
+                    if (results.more) {
+                        more = true;
+                        this.next_key = results.next_key;
+                    } else {
+                        more = false;
+                    }
+                } catch (e) {
                     more = false;
+                    this.log(`${name}: ${e}`);
                 }
             }
             this.checking_table = false;
