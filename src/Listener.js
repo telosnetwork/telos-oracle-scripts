@@ -29,6 +29,7 @@ class Listener {
         if(this.checking_table === false){
             this.log(`${name}: Doing table check...`);
             this.checking_table = true;
+            let count = 0;
             let more = true;
             while(more){
                 try {
@@ -39,6 +40,8 @@ class Listener {
                         limit: 500,
                         lower_bound: this.next_key
                     });
+                    count += results.rows.length;
+                    console.log(`Table check has processed ${count} request rows`);
                     results.rows.forEach(async(row) => {
                         await callback(row);
                     });
