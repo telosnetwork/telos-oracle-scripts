@@ -74,7 +74,7 @@ class RNGRequestListener extends Listener {
                         },
                     ],
                 },
-                { blocksBehind: 10, expireSeconds: 600 }
+                { blocksBehind: 100, expireSeconds: 600 }
             );
             this.log(`RNG Oracle Request: Signed request ${row.request_id}`);
             setTimeout(function () {
@@ -104,7 +104,7 @@ class RNGRequestListener extends Listener {
                             },
                         ],
                     },
-                    { blocksBehind: 10, expireSeconds: 600 }
+                    { blocksBehind: 100, expireSeconds: 600 }
                 );
             } catch (e) {
                 this.log(`RNG Oracle Request: Calling notifyfail() failed: ${e}`);
