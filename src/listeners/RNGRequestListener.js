@@ -74,7 +74,7 @@ class RNGRequestListener extends Listener {
                         },
                     ],
                 },
-                { blocksBehind: 10, expireSeconds: 60 }
+                { blocksBehind: 10, expireSeconds: 120 }
             );
             this.log(`RNG Oracle Request: Signed request ${row.request_id}`);
             setTimeout(function () {
@@ -82,7 +82,33 @@ class RNGRequestListener extends Listener {
             }, this.check_interval_ms) // Timeout the size of check interval
             return result;
         } catch (e) {
-            console.error(`RNG Oracle Request: Submitting signature for request ${row.request_id} failed: ${e}`);
+            this.log(`RNG Oracle Request: Submitting signature for request ${row.request_id} failed: ${e}`);
+            try {
+                this.log(`RNG Oracle Request: Calling notifyfail()`);
+                const result = await this.api.transact(
+                    {
+                        actions: [
+                            {
+                                account: this.oracle,
+                                name: "notifyfail",
+                                authorization: [
+                                    {
+                                        actor: this.caller.name,
+                                        permission: this.caller.permission,
+                                    },
+                                ],
+                                data: {
+                                    request_id: row.request_id,
+                                    oracle_name: this.caller.name,
+                                },
+                            },
+                        ],
+                    },
+                    { blocksBehind: 10, expireSeconds: 120 }
+                );
+            } catch (e) {
+                this.log(`RNG Oracle Request: Calling notifyfail() failed: ${e}`);
+            }
             setTimeout(function () {
                 ctx.removeProcessingRequest(row.request_id);
             }, 1200000) // Big timeout so we don't retry endlessly if there is a request stuck
