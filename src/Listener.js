@@ -1,6 +1,6 @@
 const HyperionStreamClient = require("@eosrio/hyperion-stream-client").default;
 const fetch = require("node-fetch");
-const nameToNumber = require('./utils/anteloppeName');
+const nameToInt = require('./utils/anteloppeName');
 
 class Listener {
     constructor(
@@ -22,6 +22,8 @@ class Listener {
         this.counter = 0;
         this.checking_table = false;
         this.next_key = '';
+        this.lastReceivedBlock = 0;
+        this.streamClient = null;
     }
 
     // RPC ANTELOPE TABLE CHECK
@@ -65,15 +67,19 @@ class Listener {
     async startStream(name, account, table, scope, callback){
         let getInfo = await this.rpc.get_info();
         let headBlock = getInfo.head_block_num;
+        this.lastReceivedBlock = headBlock;
+        this.log(`${name}: Starting Hyperion Stream ...`);
         this.streamClient = new HyperionStreamClient(
             this.hyperion,
             {
                 async: true,
                 fetch: fetch,
+                debug: true,
+                endpoint: this.hyperion,
             }
         );
-        this.streamClient.lastReceivedBlock = headBlock;
         this.streamClient.onConnect = () => {
+            this.log(`${name}: Connecting to Hyperion Stream ...`);
             this.streamClient.streamDeltas({
                 code: account,
                 table: table,
@@ -84,27 +90,28 @@ class Listener {
             });
         };
         this.streamClient.onData = async (data, ack) => {
-            this.streamClient.lastReceivedBlock = data.block_num;
-            if (data.content.present && scope === parseInt(nameToNumber(data.content.scope).toString()) || data.content.present && scope === data.content.scope.toString()) {
+            this.lastReceivedBlock = data.block_num;
+            if (data.content.present && scope === nameToInt(data.content.scope) || data.content.present && scope === data.content.scope.toString()) {
                 await callback(data);
             }
             ack();
         };
-        this.streamClient.connect(() => {
-            this.log(`${name}: Connected to Hyperion Stream...`);
-        });
 
         let interval = setInterval(async () => {
-            if(typeof this.streamClient.lastReceivedBlock !== "undefined" && this.streamClient.lastReceivedBlock !== 0){
+            if(this.lastReceivedBlock !== 0){
                 let getInfo = await this.rpc.get_info();
-                if(this.max_block_diff < ( getInfo.head_block_num - this.streamClient.lastReceivedBlock)){
+                if(this.max_block_diff < ( getInfo.head_block_num - this.lastReceivedBlock)){
                     clearInterval(interval);
-                    this.log(`${name}: Restarting stream...`);
+                    this.log(`${name}: Restarting Hyperion Stream...`);
                     this.streamClient.disconnect();
                     await this.startStream(name, account, table, scope, callback);
                 }
             }
-        }, this.check_interval_ms)
+        }, this.check_interval_ms);
+
+        await this.streamClient.connect(() => {
+            this.log(`${name}: Connected to Hyperion Stream !`);
+        });
     }
 
     // LOG UTIL
