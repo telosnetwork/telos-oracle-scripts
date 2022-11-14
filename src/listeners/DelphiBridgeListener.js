@@ -8,14 +8,13 @@ class DelphiBridgeListener extends EVMListener {
   constructor(
       oracle,
       rpc,
-      api,
       evm_provider,
       evm_api,
       config,
-      bridge
+      hyperion
   ){
-    super(oracle, rpc, api, evm_provider, evm_api, config, bridge);
-    const conf = config.scripts.listeners.delphi.bridge;
+    const conf = config.delphi.bridge;
+    super(oracle, rpc, evm_provider, evm_api, config, {"antelope_account": conf.account, "eosio_evm_scope" : conf.eosio_evm_scope, "eth_account": conf.evm_contract.toLowerCase() }, hyperion);
     if(conf.check_interval_ms){
       this.check_interval_ms = conf.check_interval_ms; // Override base interval
     }

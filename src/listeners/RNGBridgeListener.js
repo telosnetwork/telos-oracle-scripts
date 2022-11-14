@@ -11,14 +11,13 @@ class RNGBridgeListener extends EVMListener {
     constructor(
         oracle,
         rpc,
-        api,
         evm_provider,
         evm_api,
         config,
-        bridge,
+        hyperion,
     ){
-        super(oracle, rpc, api, evm_provider, evm_api, config, bridge);
-        this.conf = config.scripts.listeners.rng.bridge;
+        this.conf = config.rng.bridge;
+        super(oracle, rpc, evm_provider, evm_api, config, {"antelope_account": conf.account, "eosio_evm_scope" : conf.eosio_evm_scope, "eth_account": conf.evm_contract.toLowerCase() }, hyperion);
         if(this.conf.check_interval_ms > 0){
             this.check_interval_ms = this.conf.check_interval_ms; // Override base interval
         }

@@ -1,29 +1,39 @@
 const HyperionStreamClient = require("@eosrio/hyperion-stream-client").default;
 const fetch = require("node-fetch");
 const nameToInt = require('./utils/anteloppeName');
+const util = require('util');
+const JsSignatureProvider = require('eosjs/dist/eosjs-jssig').JsSignatureProvider;
+const Eos = require('eosjs');
+const Api = Eos.Api;
 
 class Listener {
     constructor(
         oracle,
         rpc,
-        api,
         config,
+        hyperion,
         bridge
     ) {
-        this.caller = {"name": config.antelope.caller.name, "permission": config.antelope.caller.permission, "private_key":  config.antelope.caller.private_key, "signing_key":  config.antelope.caller.signing_key};
+        this.caller = {"name": config.caller.name, "permission": config.caller.permission, "private_key":  config.caller.private_key, "signing_key":  config.caller.signing_key};
         this.oracle = oracle;
         this.bridge = bridge;
-        this.check_interval_ms = config.scripts.listeners.check_interval_ms;
-        this.max_block_diff = config.scripts.listeners.max_block_diff;
-        this.hyperion = config.antelope.hyperion;
+        this.check_interval_ms = config.check_interval_ms;
+        this.max_block_diff = config.max_block_diff;
+        this.hyperion = hyperion;
         this.rpc = rpc;
-        this.console_log = (config.scripts.listeners.console_log) ? true : false;
-        this.api = api;
+        this.console_log = (config.console_log) ? true : false;
         this.counter = 0;
         this.checking_table = false;
         this.next_key = '';
         this.lastReceivedBlock = 0;
         this.streamClient = null;
+        const signatureProvider = new JsSignatureProvider([config.caller.private_key]);
+        this.api = new Api({
+            rpc,
+            signatureProvider,
+            textDecoder: new util.TextDecoder(),
+            textEncoder: new util.TextEncoder()
+        });
     }
 
     // RPC ANTELOPE TABLE CHECK
@@ -39,14 +49,14 @@ class Listener {
                         code: account,
                         scope: scope,
                         table: table,
-                        limit: 500,
+                        limit: 100,
                         lower_bound: this.next_key
                     });
                     count += results.rows.length;
-                    console.log(`Table check has processed ${count} request rows`);
-                    results.rows.forEach(async(row) => {
-                        await callback(row);
-                    });
+                    this.log(`${name}: Table check has processed ${count} request rows`);
+                    for(var i = 0; i < results.rows.length; i++) {
+                        await callback(results.rows[i]);
+                    };
                     if (results.more) {
                         more = true;
                         this.next_key = results.next_key;
@@ -55,7 +65,7 @@ class Listener {
                     }
                 } catch (e) {
                     more = false;
-                    this.log(`${name}: ${e}`);
+                    this.log(`${name}: Table check failed: ${e}`);
                 }
             }
             this.checking_table = false;

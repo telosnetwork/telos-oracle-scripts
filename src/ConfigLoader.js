@@ -6,6 +6,15 @@ class ConfigLoader {
         this.errors = [];
         this.listeners = [
             {
+                name: 'caller',
+                children: [
+                    { name: 'name' },
+                    { name: 'permission' },
+                    { name: 'private_key' },
+                    { name: 'signing_key' }
+                ]
+            },
+            {
                 name: 'delphi',
                 children: [
                     {
@@ -34,6 +43,14 @@ class ConfigLoader {
             }
         ];
         this.updaters = [
+            {
+                name: 'caller',
+                children: [
+                    { name: 'name' },
+                    { name: 'permission' },
+                    {  name: 'private_key' }
+                ]
+            },
             {
                 name: 'delphi',
                 children: [

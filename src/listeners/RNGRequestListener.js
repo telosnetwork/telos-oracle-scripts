@@ -8,12 +8,11 @@ class RNGRequestListener extends Listener {
     constructor(
         oracle,
         rpc,
-        api,
         config,
-        bridge
+        hyperion
     ){
-        super(oracle, rpc, api, config, bridge);
-        const conf = config.scripts.listeners.rng.request;
+        super(oracle, rpc, config, hyperion);
+        const conf = config.rng.request;
         if(conf.check_interval_ms){
             this.check_interval_ms = conf.check_interval_ms; // Override base interval
         }
@@ -106,13 +105,17 @@ class RNGRequestListener extends Listener {
                     },
                     { blocksBehind: 100, expireSeconds: 600 }
                 );
+                setTimeout(function () {
+                    ctx.removeProcessingRequest(row.request_id);
+                }, 600000);
+                return false;
             } catch (e) {
                 this.log(`RNG Oracle Request: Calling notifyfail() failed: ${e}`);
+                setTimeout(function () {
+                    ctx.removeProcessingRequest(row.request_id);
+                }, 600000);
+                return false;
             }
-            setTimeout(function () {
-                ctx.removeProcessingRequest(row.request_id);
-            }, 1200000) // Big timeout so we don't retry endlessly if there is a request stuck
-            return false;
         }
     }
 }

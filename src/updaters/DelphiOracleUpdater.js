@@ -4,9 +4,9 @@ const fetch = require('node-fetch');
 const fs = require('fs');
 
 class DelphiOracleUpdater extends Updater {
-    constructor(oracle, config, updater_config, api){
-        super(oracle, config, updater_config, api)
-        this.services = config.scripts.updaters.delphi.services;
+    constructor(oracle, config, api){
+        super(oracle, config, api)
+        this.services = config.delphi.services;
         this.quotes = [];
     }
     resetQuotes() {

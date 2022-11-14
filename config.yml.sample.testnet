@@ -1,10 +1,5 @@
 # ANTELOPE GENRAL CONFIG
 antelope:
-  caller:
-    name: "oracletest"
-    permission: "active"
-    private_key: "5J2wq...."
-    signing_key: "5J2wq...."
   rpc: "https://testnet.telos.caleos.io"
   hyperion: "https://testnet.telos.caleos.io"
 
@@ -17,6 +12,11 @@ evm:
 # SCRIPTS CONFIG
 scripts:
   listeners:
+    caller:
+      name: "oracletest"
+      permission: "active"
+      private_key: "5J2wq...."
+      signing_key: "5J2wq...."
     console_log: false
     max_block_diff: 1200 # Restart stream if it hasn't received data since X blocks... (1200 / 2 = 600s = 10mn)
     check_interval_ms: 15000 # Check table every X to make sure stream didn't miss anything
@@ -48,6 +48,10 @@ scripts:
         evm_contract: "0x648ac5a8c4E1ae5A93cd5BeDF143B095B8c49a2a"
         account: "gasbridge"
   updaters:
+    caller:
+      name: "oracletest"
+      permission: "active"
+      private_key: "5J2wq...."
     console_log: false
     delphi:
       active: false
