@@ -10,10 +10,12 @@ class EVMListener extends Listener {
         evm_api,
         config,
         bridge,
-        hyperion
+        hyperion,
+        caller
     ) {
-        super(oracle, rpc, api, config, bridge, hyperion);
+        super(oracle, rpc, api, config, hyperion, caller);
         this.evm_api = evm_api;
+        this.bridge = bridge;
         this.evm_provider = evm_provider;
     }
 }

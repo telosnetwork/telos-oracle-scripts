@@ -5,7 +5,7 @@ const fs = require('fs');
 
 class DelphiOracleUpdater extends Updater {
     constructor(oracle, config, api){
-        super(oracle, config, api)
+        super(oracle, config, api, {"name": config.delphi.caller.name, "permission": config.delphi.caller.permission, "private_key":  config.delphi.caller.private_key})
         this.services = config.delphi.services;
         this.quotes = [];
     }

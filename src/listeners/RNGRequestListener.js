@@ -11,8 +11,8 @@ class RNGRequestListener extends Listener {
         config,
         hyperion
     ){
-        super(oracle, rpc, config, hyperion);
         const conf = config.rng.request;
+        super(oracle, rpc, config, hyperion, {"name": config.rng.caller.name, "permission": config.rng.caller.permission, "private_key":  config.rng.caller.private_key, "signing_key":  config.rng.caller.signing_key});
         if(conf.check_interval_ms){
             this.check_interval_ms = conf.check_interval_ms; // Override base interval
         }

@@ -6,12 +6,12 @@ const JsSignatureProvider = require('eosjs/dist/eosjs-jssig').JsSignatureProvide
 const Api = Eos.Api;
 
 class Updater {
-    constructor(oracle, config, rpc){
+    constructor(oracle, config, rpc, caller){
         this.update_interval_ms = updater_config.update_interval_ms;
-        this.caller = {"name": config.caller.name, "permission": config.caller.permission, "private_key":  config.caller.private_key};
+        this.caller = caller;
         this.oracle = oracle;
         this.console_log = config.console_log ? true : false;
-        const signatureProvider = new JsSignatureProvider([config.caller.private_key]);
+        const signatureProvider = new JsSignatureProvider([caller.private_key]);
         this.api = new Api({
             rpc,
             signatureProvider,

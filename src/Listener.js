@@ -12,11 +12,10 @@ class Listener {
         rpc,
         config,
         hyperion,
-        bridge
+        caller
     ) {
-        this.caller = {"name": config.caller.name, "permission": config.caller.permission, "private_key":  config.caller.private_key, "signing_key":  config.caller.signing_key};
+        this.caller = caller;
         this.oracle = oracle;
-        this.bridge = bridge;
         this.check_interval_ms = config.check_interval_ms;
         this.max_block_diff = config.max_block_diff;
         this.hyperion = hyperion;
@@ -27,7 +26,7 @@ class Listener {
         this.next_key = '';
         this.lastReceivedBlock = 0;
         this.streamClient = null;
-        const signatureProvider = new JsSignatureProvider([config.caller.private_key]);
+        const signatureProvider = new JsSignatureProvider([caller.private_key]);
         this.api = new Api({
             rpc,
             signatureProvider,
@@ -52,11 +51,11 @@ class Listener {
                         limit: 100,
                         lower_bound: this.next_key
                     });
-                    count += results.rows.length;
-                    this.log(`${name}: Table check has processed ${count} request rows`);
+                    this.log(`${name}: Table check has retreived ${results.rows.length} request rows`);
                     for(var i = 0; i < results.rows.length; i++) {
                         await callback(results.rows[i]);
                     };
+                    this.log(`${name}: Table check has processed ${results.rows.length} request rows`);
                     if (results.more) {
                         more = true;
                         this.next_key = results.next_key;
