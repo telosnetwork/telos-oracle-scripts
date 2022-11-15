@@ -63,7 +63,6 @@ class Listener {
                         await callback(data);
                     })
                 }
-                this.log(`${name}: Table check has processed ${results.rows.length} request rows`);
                 this.next_key = results.next_key;
                 if (results.more) {
                     more = true;
