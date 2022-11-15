@@ -68,7 +68,8 @@ class Listener {
                     this.next_key = results.next_key;
                     more = true;
                 } else {
-                    this.next_key = this.next_key + results.rows.length;
+                    let key = parseInt(this.next_key) + results.rows.length;
+                    this.next_key = key.toString();
                     more = false;
                 }
             } catch (e) {
