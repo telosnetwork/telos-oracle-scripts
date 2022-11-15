@@ -8,9 +8,9 @@
     "@eosrio/hyperion-stream-client": "^0.4.0-beta.5",
     "@telosnetwork/telosevm-js": "^0.2.8",
     "dotenv": "^9.0.0",
-    "eosjs": "^21.0.4",
+    "eosjs": "^22.1",
     "eosjs-ecc": "^4.0.7",
-    "ethers": "^5.7.0",
+    "ethers": "^5.7.2",
     "js-yaml": "^4.1.0",
     "node-fetch": "^2.6.7"
   }

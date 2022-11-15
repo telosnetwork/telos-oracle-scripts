@@ -33,6 +33,7 @@ class Listener {
             textDecoder: new util.TextDecoder(),
             textEncoder: new util.TextEncoder()
         });
+        this.abi = false;
     }
 
     // RPC ANTELOPE TABLE CHECK
@@ -100,11 +101,16 @@ class Listener {
         };
         this.streamClient.onData = async (data, ack) => {
             this.lastReceivedBlock = data.block_num;
+            this.log(`${name}: Data received from Hyperion Stream...`);
             if (data.content.present && scope === nameToInt(data.content.scope) || data.content.present && scope === data.content.scope.toString()) {
                 await callback(data);
             }
             ack();
         };
+
+        await this.streamClient.connect(() => {
+            this.log(`${name}: Connected to Hyperion Stream !`);
+        });
 
         let interval = setInterval(async () => {
             if(this.lastReceivedBlock !== 0){
@@ -117,10 +123,6 @@ class Listener {
                 }
             }
         }, this.check_interval_ms);
-
-        await this.streamClient.connect(() => {
-            this.log(`${name}: Connected to Hyperion Stream !`);
-        });
     }
 
     // LOG UTIL

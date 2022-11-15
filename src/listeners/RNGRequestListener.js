@@ -49,62 +49,32 @@ class RNGRequestListener extends Listener {
         if (this.processing.includes(row.request_id) || typeof this.caller.signing_key === "undefined" || row.oracle1 === this.caller.name || row.oracle2 === this.caller.name){
             return false;
         }
+        if(!this.abi){
+            await this.api.getAbi(this.oracle);
+            this.abi = true;
+        }
         this.processing.push(row.request_id);
         this.log(`RNG Oracle Request: Signing request_id: ${row.request_id}...`);
         let ctx = this;
         try {
-            const result = await this.api.transact(
-                {
-                    actions: [
-                        {
-                            account: this.oracle,
-                            name: "submitrand",
-                            authorization: [
-                                {
-                                    actor: this.caller.name,
-                                    permission: this.caller.permission,
-                                },
-                            ],
-                            data: {
-                                request_id: row.request_id,
-                                oracle_name: this.caller.name,
-                                sig: ecc.signHash(row.digest, this.caller.signing_key),
-                            },
-                        },
-                    ],
-                },
-                { blocksBehind: 100, expireSeconds: 600 }
-            );
+            await this.api.buildTransaction(async (tx) => {
+                tx.with(this.oracle).as([{ actor: this.caller.name, permission: this.caller.permission}]).submitrand(row.request_id, this.caller.name, ecc.signHash(row.digest, this.caller.signing_key))
+                await tx.send({ blocksBehind: 3, expireSeconds: 120 });
+            });
             this.log(`RNG Oracle Request: Signed request ${row.request_id}`);
             setTimeout(function () {
                 ctx.removeProcessingRequest(row.request_id);
             }, this.check_interval_ms) // Timeout the size of check interval
-            return result;
+            return true;
         } catch (e) {
             this.log(`RNG Oracle Request: Submitting signature for request ${row.request_id} failed: ${e}`);
+            this.log(e);
             try {
                 this.log(`RNG Oracle Request: Calling notifyfail()`);
-                const result = await this.api.transact(
-                    {
-                        actions: [
-                            {
-                                account: this.oracle,
-                                name: "notifyfail",
-                                authorization: [
-                                    {
-                                        actor: this.caller.name,
-                                        permission: this.caller.permission,
-                                    },
-                                ],
-                                data: {
-                                    request_id: row.request_id,
-                                    oracle_name: this.caller.name,
-                                },
-                            },
-                        ],
-                    },
-                    { blocksBehind: 100, expireSeconds: 600 }
-                );
+                await this.api.buildTransaction(async (tx) => {
+                    tx.with(this.oracle).as([{ actor: this.caller.name, permission: this.caller.permission}]).notifyfail(row.request_id, this.caller.name)
+                    await tx.send({ blocksBehind: 3, expireSeconds: 30 });
+                });
                 setTimeout(function () {
                     ctx.removeProcessingRequest(row.request_id);
                 }, 600000);

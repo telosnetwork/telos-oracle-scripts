@@ -64,7 +64,7 @@ class RNGBridgeListener extends EVMListener {
             }]
         }, {
             blocksBehind: 3,
-            expireSeconds: 90,
+            expireSeconds: 120,
         }).then(result => {
             this.log('RNG Oracle Bridge: Called reqnotify() successfully !');
         }).catch(e => {
