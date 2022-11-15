@@ -6,6 +6,7 @@
   "license": "MIT",
   "dependencies": {
     "@eosrio/hyperion-stream-client": "1.0.3",
+    "@supercharge/promise-pool": "^2.3.2",
     "@telosnetwork/telosevm-js": "^0.2.8",
     "dotenv": "^9.0.0",
     "eosjs": "^22.1",

@@ -3,6 +3,7 @@ const nameToInt = require('./utils/anteloppeName');
 const util = require('util');
 const JsSignatureProvider = require('eosjs/dist/eosjs-jssig').JsSignatureProvider;
 const Eos = require('eosjs');
+const { PromisePool } = require('@supercharge/promise-pool')
 const Api = Eos.Api;
 
 class Listener {
@@ -52,13 +53,16 @@ class Listener {
                     code: account,
                     scope: scope,
                     table: table,
-                    limit: 100,
+                    limit: 20,
                     lower_bound: this.next_key
                 });
                 this.log(`${name}: Table check has retreived ${results.rows.length} request rows`);
-                for(var i = 0; i < results.rows.length; i++) {
-                    await callback(results.rows[i]);
-                };
+                await PromisePool
+                    .for(results.rows)
+                    .withConcurrency(results.rows.length)
+                    .process(async data => {
+                        await callback(data);
+                })
                 this.log(`${name}: Table check has processed ${results.rows.length} request rows`);
                 if (results.more) {
                     more = true;
@@ -83,16 +87,24 @@ class Listener {
         this.log(`${name}: Starting Hyperion Stream ...`);
 
         this.streamClient.on(StreamClientEvents.LIBUPDATE, (data) => {
+            // What is that ???
             this.log(data);
         });
 
         this.streamClient.on('connect', () => {
             this.log(`${name}: Connected to Hyperion Stream ...`);
+            this.streamClient.streamDeltas({
+                code: account,
+                table: table,
+                scope: scope,
+                payer: "",
+                start_from: -1,
+                read_until: 0,
+            });
         });
 
         this.streamClient.setAsyncDataHandler(async (data) => {
             this.lastReceivedBlock = data.block_num;
-            this.log(data);
             if (data.content.present && scope === nameToInt(data.content.scope) || data.content.present && scope === data.content.scope.toString()) {
                 this.log(`${name}: Data received from Hyperion Stream...`);
                 await callback(data.content.data);
@@ -100,14 +112,6 @@ class Listener {
         });
 
         await this.streamClient.connect();
-        this.streamClient.streamDeltas({
-            code: account,
-            table: table,
-            scope: scope,
-            payer: "",
-            start_from: -1,
-            read_until: 0,
-        });
 
         let interval = setInterval(async () => {
             if(this.lastReceivedBlock !== 0){
