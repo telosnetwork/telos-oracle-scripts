@@ -83,9 +83,7 @@ class Listener {
             this.hyperion,
             {
                 async: true,
-                fetch: fetch,
-                debug: true,
-                endpoint: this.hyperion,
+                fetch: fetch
             }
         );
         this.streamClient.onConnect = () => {
@@ -99,6 +97,7 @@ class Listener {
                 read_until: 0,
             });
         };
+
         this.streamClient.onData = async (data, ack) => {
             this.lastReceivedBlock = data.block_num;
             this.log(`${name}: Data received from Hyperion Stream...`);
@@ -107,10 +106,6 @@ class Listener {
             }
             ack();
         };
-
-        await this.streamClient.connect(() => {
-            this.log(`${name}: Connected to Hyperion Stream !`);
-        });
 
         let interval = setInterval(async () => {
             if(this.lastReceivedBlock !== 0){
@@ -123,6 +118,10 @@ class Listener {
                 }
             }
         }, this.check_interval_ms);
+
+        await this.streamClient.connect(() => {
+            this.log(`${name}: Connected to Hyperion Stream !`);
+        });
     }
 
     // LOG UTIL

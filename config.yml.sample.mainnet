@@ -12,23 +12,28 @@ evm:
 # SCRIPTS CONFIG
 scripts:
   listeners:
-    caller:
-      name: "oracletest"
-      permission: "active"
-      private_key: "5J2wq...."
-      signing_key: "5J2wq...."
     console_log: false
     max_block_diff: 600 # Restart stream if it hasn't received data since X blocks... (600 / 2 = 300s = 5mn)
     check_interval_ms: 15000 # Check table every X ms to make sure stream didn't miss anything
     delphi:
+      caller:
+        name: "oracletest"
+        permission: "active"
+        private_key: "5J2wq...."
+        signing_key: "5J2wq...."
       account: "delphioracle"
       bridge:
-        account: "delphibridge"
         active: false
+        account: "delphibridge"
         evm_contract: "0x0Af690bb090080fe7DC2E5864c6271402d534fDD"
         eosio_evm_scope: 36263
         check_interval_ms: 15000
     rng:
+      caller:
+        name: "oracletest"
+        permission: "active"
+        private_key: "5J2wq...."
+        signing_key: "5J2wq...."
       account: "rng.oracle"
       request:
         active: true
@@ -41,6 +46,11 @@ scripts:
         evm_contract: "0xcbB8a0e3Ec07A8baB91CCAA6E1F368AB919acd30"
         check_interval_ms: 15000
     gas:
+      caller:
+        name: "oracletest"
+        permission: "active"
+        private_key: "5J2wq...."
+        signing_key: "5J2wq...."
       account: "eosio.evm"
       bridge:
         active: false
@@ -55,6 +65,10 @@ scripts:
     console_log: false
     delphi:
       active: false
+      caller:
+        name: "oracletest"
+        permission: "active"
+        private_key: "5J2wq...."
       update_interval_ms: 5000
       account: "delphioracle"
       services:

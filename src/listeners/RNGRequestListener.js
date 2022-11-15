@@ -59,7 +59,7 @@ class RNGRequestListener extends Listener {
         try {
             await this.api.buildTransaction(async (tx) => {
                 tx.with(this.oracle).as([{ actor: this.caller.name, permission: this.caller.permission}]).submitrand(row.request_id, this.caller.name, ecc.signHash(row.digest, this.caller.signing_key))
-                await tx.send({ blocksBehind: 3, expireSeconds: 120 });
+                await tx.send({ blocksBehind: 3, expireSeconds: 90 });
             });
             this.log(`RNG Oracle Request: Signed request ${row.request_id}`);
             setTimeout(function () {
@@ -68,12 +68,11 @@ class RNGRequestListener extends Listener {
             return true;
         } catch (e) {
             this.log(`RNG Oracle Request: Submitting signature for request ${row.request_id} failed: ${e}`);
-            this.log(e);
             try {
                 this.log(`RNG Oracle Request: Calling notifyfail()`);
                 await this.api.buildTransaction(async (tx) => {
                     tx.with(this.oracle).as([{ actor: this.caller.name, permission: this.caller.permission}]).notifyfail(row.request_id, this.caller.name)
-                    await tx.send({ blocksBehind: 3, expireSeconds: 30 });
+                    await tx.send({ blocksBehind: 3, expireSeconds: 90 });
                 });
                 setTimeout(function () {
                     ctx.removeProcessingRequest(row.request_id);
