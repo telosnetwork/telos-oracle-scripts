@@ -58,17 +58,17 @@ class Listener {
                     lower_bound: this.next_key
                 });
                 this.log(`${name}: Table check has retreived ${results.rows.length} request rows`);
-                await PromisePool
-                    .for(results.rows)
-                    .withConcurrency(results.rows.length)
-                    .process(async data => {
+                if(results.rows.length){
+                    await PromisePool.for(results.rows).withConcurrency(results.rows.length).process(async data => {
                         await callback(data);
-                })
+                    })
+                }
                 this.log(`${name}: Table check has processed ${results.rows.length} request rows`);
                 if (results.more) {
-                    more = true;
                     this.next_key = results.next_key;
+                    more = true;
                 } else {
+                    this.next_key = this.next_key + results.rows.length;
                     more = false;
                 }
             } catch (e) {
