@@ -21,12 +21,12 @@ class RNGRequestListener extends Listener {
 
     async start() {
         if (typeof this.caller.signing_key === "undefined" ){
-            this.log('/!\\ RNG Oracle Request: Signing key is undefined. RNG Oracle Request script will not try to sign.')
+            this.log('/!\\ RNG Oracle Request: Signing key is undefined. RNG Oracle Request script will not try to sign requests.')
         }
         // HYPERION STREAM
         await super.startStream("RNG Oracle Request", this.oracle, REQUESTS_TABLE, this.oracle, async (data) => {
-            await this.signRow(data.content.data);
-        })
+            await this.signRow(data);
+        });
         // RPC TABLE CHECK
         await this.doTableCheck();
         setInterval(async () => {
@@ -61,23 +61,31 @@ class RNGRequestListener extends Listener {
                 tx.with(this.oracle).as([{ actor: this.caller.name, permission: this.caller.permission}]).submitrand(row.request_id, this.caller.name, ecc.signHash(row.digest, this.caller.signing_key))
                 await tx.send({ blocksBehind: 3, expireSeconds: 90 });
             });
+
             this.log(`RNG Oracle Request: Signed request ${row.request_id}`);
+
             setTimeout(function () {
                 ctx.removeProcessingRequest(row.request_id);
             }, this.check_interval_ms) // Timeout the size of check interval
+
             return true;
+
         } catch (e) {
             this.log(`RNG Oracle Request: Submitting signature for request ${row.request_id} failed: ${e}`);
+
             try {
                 this.log(`RNG Oracle Request: Calling notifyfail()`);
                 await this.api.buildTransaction(async (tx) => {
                     tx.with(this.oracle).as([{ actor: this.caller.name, permission: this.caller.permission}]).notifyfail(row.request_id, this.caller.name)
                     await tx.send({ blocksBehind: 3, expireSeconds: 90 });
                 });
+
                 setTimeout(function () {
                     ctx.removeProcessingRequest(row.request_id);
                 }, 600000);
+
                 return false;
+
             } catch (e) {
                 this.log(`RNG Oracle Request: Calling notifyfail() failed: ${e}`);
                 setTimeout(function () {

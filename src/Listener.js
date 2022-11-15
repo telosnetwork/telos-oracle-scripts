@@ -1,5 +1,4 @@
-const HyperionStreamClient = require("@eosrio/hyperion-stream-client").default;
-const fetch = require("node-fetch");
+const { HyperionStreamClient } = require("@eosrio/hyperion-stream-client");
 const nameToInt = require('./utils/anteloppeName');
 const util = require('util');
 const JsSignatureProvider = require('eosjs/dist/eosjs-jssig').JsSignatureProvider;
@@ -38,74 +37,65 @@ class Listener {
 
     // RPC ANTELOPE TABLE CHECK
     async doTableCheck(name, account, scope, table, reverse, callback) {
-        if(this.checking_table === false){
-            this.log(`${name}: Doing table check...`);
-            this.checking_table = true;
-            let count = 0;
-            let more = true;
-            while(more){
-                try {
-                    const results = await this.rpc.get_table_rows({
-                        code: account,
-                        scope: scope,
-                        table: table,
-                        limit: 100,
-                        lower_bound: this.next_key
-                    });
-                    this.log(`${name}: Table check has retreived ${results.rows.length} request rows`);
-                    for(var i = 0; i < results.rows.length; i++) {
-                        await callback(results.rows[i]);
-                    };
-                    this.log(`${name}: Table check has processed ${results.rows.length} request rows`);
-                    if (results.more) {
-                        more = true;
-                        this.next_key = results.next_key;
-                    } else {
-                        more = false;
-                    }
-                } catch (e) {
+        if(this.checking_table) return;
+        this.log(`${name}: Doing table check...`);
+        this.checking_table = true;
+        let count = 0;
+        let more = true;
+        while(more){
+            try {
+                const results = await this.rpc.get_table_rows({
+                    code: account,
+                    scope: scope,
+                    table: table,
+                    limit: 100,
+                    lower_bound: this.next_key
+                });
+                this.log(`${name}: Table check has retreived ${results.rows.length} request rows`);
+                for(var i = 0; i < results.rows.length; i++) {
+                    await callback(results.rows[i]);
+                };
+                this.log(`${name}: Table check has processed ${results.rows.length} request rows`);
+                if (results.more) {
+                    more = true;
+                    this.next_key = results.next_key;
+                } else {
                     more = false;
-                    this.log(`${name}: Table check failed: ${e}`);
                 }
+            } catch (e) {
+                more = false;
+                this.log(`${name}: Table check failed: ${e}`);
             }
-            this.checking_table = false;
-            this.log(`${name}: Done doing table check !`);
         }
+        this.checking_table = false;
+        this.log(`${name}: Done doing table check !`);
     }
 
     // HYPERION STREAM
     async startStream(name, account, table, scope, callback){
         let getInfo = await this.rpc.get_info();
         let headBlock = getInfo.head_block_num;
-        this.lastReceivedBlock = headBlock;
+        this.lastReceivedBlock = headBlock - 1;
         this.log(`${name}: Starting Hyperion Stream ...`);
-        this.streamClient = new HyperionStreamClient(
-            this.hyperion,
-            {
-                async: true,
-                fetch: fetch
-            }
-        );
-        this.streamClient.onConnect = () => {
-            this.log(`${name}: Connecting to Hyperion Stream ...`);
-            this.streamClient.streamDeltas({
-                code: account,
-                table: table,
-                scope: scope,
-                payer: "",
-                start_from: headBlock,
-                read_until: 0,
-            });
-        };
 
-        this.streamClient.onData = async (data, ack) => {
+        this.streamClient = new HyperionStreamClient({
+                endpoint: this.hyperion,
+                debug: true,
+                libStream: false
+        });
+
+        this.streamClient.on('connect', () => {
+            this.log(`${name}: Connected to Hyperion Stream ...`);
+        });
+
+        this.streamClient.setAsyncDataHandler(async (data) => {
             this.lastReceivedBlock = data.block_num;
-            this.log(`${name}: Data received from Hyperion Stream...`);
+            this.log(data);
             if (data.content.present && scope === nameToInt(data.content.scope) || data.content.present && scope === data.content.scope.toString()) {
-                await callback(data);
+                this.log(`${name}: Data received from Hyperion Stream...`);
+                await callback(data.content.data);
             }
-            ack();
-        };
+        });
 
         let interval = setInterval(async () => {
             if(this.lastReceivedBlock !== 0){
@@ -113,15 +103,24 @@ class Listener {
                 if(this.max_block_diff < ( getInfo.head_block_num - this.lastReceivedBlock)){
                     clearInterval(interval);
                     this.log(`${name}: Restarting Hyperion Stream...`);
-                    this.streamClient.disconnect();
+                    await this.streamClient.disconnect();
                     await this.startStream(name, account, table, scope, callback);
                 }
             }
         }, this.check_interval_ms);
 
-        await this.streamClient.connect(() => {
-            this.log(`${name}: Connected to Hyperion Stream !`);
+        await this.streamClient.connect();
+
+        this.streamClient.streamDeltas({
+            code: account,
+            table: table,
+            scope: scope,
+            payer: "",
+            start_from: 0,
+            read_until: 0,
         });
+
+        return;
     }
 
     // LOG UTIL
