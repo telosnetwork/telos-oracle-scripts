@@ -1,4 +1,4 @@
-const { HyperionStreamClient } = require("@eosrio/hyperion-stream-client");
+const { HyperionStreamClient, StreamClientEvents } = require("@eosrio/hyperion-stream-client");
 const nameToInt = require('./utils/anteloppeName');
 const util = require('util');
 const JsSignatureProvider = require('eosjs/dist/eosjs-jssig').JsSignatureProvider;
@@ -24,7 +24,11 @@ class Listener {
         this.checking_table = false;
         this.next_key = '';
         this.lastReceivedBlock = 0;
-        this.streamClient = null;
+        this.streamClient = new HyperionStreamClient({
+            endpoint: hyperion,
+            debug: true,
+            libStream: false
+        });
         const signatureProvider = new JsSignatureProvider([caller.private_key]);
         this.api = new Api({
             rpc,
@@ -78,10 +82,8 @@ class Listener {
         this.lastReceivedBlock = headBlock - 1;
         this.log(`${name}: Starting Hyperion Stream ...`);
 
-        this.streamClient = new HyperionStreamClient({
-                endpoint: this.hyperion,
-                debug: true,
-                libStream: false
+        this.streamClient.on(StreamClientEvents.LIBUPDATE, (data) => {
+            this.log(data);
         });
 
         this.streamClient.on('connect', () => {
@@ -97,6 +99,16 @@ class Listener {
             }
         });
 
+        await this.streamClient.connect();
+        this.streamClient.streamDeltas({
+            code: account,
+            table: table,
+            scope: scope,
+            payer: "",
+            start_from: -1,
+            read_until: 0,
+        });
+
         let interval = setInterval(async () => {
             if(this.lastReceivedBlock !== 0){
                 let getInfo = await this.rpc.get_info();
@@ -108,17 +120,6 @@ class Listener {
                 }
             }
         }, this.check_interval_ms);
-
-        await this.streamClient.connect();
-
-        this.streamClient.streamDeltas({
-            code: account,
-            table: table,
-            scope: scope,
-            payer: "",
-            start_from: 0,
-            read_until: 0,
-        });
 
         return;
     }
