@@ -1,14 +1,23 @@
 const Eos = require('eosjs');
 const fetch = require('node-fetch');
 const fs = require('fs');
+const util = require('util');
+const JsSignatureProvider = require('eosjs/dist/eosjs-jssig').JsSignatureProvider;
+const Api = Eos.Api;
 
 class Updater {
-    constructor(oracle, config, updater_config, api){
+    constructor(oracle, config, rpc, caller){
         this.update_interval_ms = updater_config.update_interval_ms;
-        this.caller = {"name": config.antelope.caller.name, "permission": config.antelope.caller.permission, "private_key":  config.antelope.caller.private_key, "signing_key":  config.antelope.caller.signing_key};
+        this.caller = caller;
         this.oracle = oracle;
-        this.api = api;
-        this.console_log = config.scripts.updaters.console_log ? true : false;
+        this.console_log = config.console_log ? true : false;
+        const signatureProvider = new JsSignatureProvider([caller.private_key]);
+        this.api = new Api({
+            rpc,
+            signatureProvider,
+            textDecoder: new util.TextDecoder(),
+            textEncoder: new util.TextEncoder()
+        });
     }
     log(message, error){
         if(this.console_log) console.log(message);

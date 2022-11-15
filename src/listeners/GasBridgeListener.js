@@ -7,14 +7,13 @@ class GasListener extends EVMListener {
     constructor(
         oracle,
         rpc,
-        api,
         evm_provider,
         evm_api,
         config,
-        bridge,
+        hyperion,
     ) {
-        super(oracle, rpc, api, evm_provider, evm_api, config, bridge);
-        const conf = config.scripts.listeners.gas.bridge;
+        const conf = config.gas.bridge;
+        super(oracle, rpc, evm_provider, evm_api, config, {"antelope_account": conf.account, "eth_account": conf.evm_contract.toLowerCase() }, hyperion, {"name": config.gas.caller.name, "permission": config.gas.caller.permission, "private_key":  config.gas.caller.private_key, "signing_key":  config.gas.caller.signing_key});
         if(conf.check_interval_ms){
             this.check_interval_ms = conf.check_interval_ms; // Override interval for gas listeners
         }

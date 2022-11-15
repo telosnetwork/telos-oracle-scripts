@@ -14,6 +14,10 @@ class ConfigLoader {
                     {
                         name: 'bridge',
                         children: ["eosio_evm_scope", "account", "evm_contract"]
+                    },
+                    {
+                        name: 'caller',
+                        children: ['name','permission','private_key','signing_key']
                     }
                 ]
             },
@@ -22,14 +26,22 @@ class ConfigLoader {
                 children: [
                     {name: 'account'},
                     {name: 'bridge', children: ["eosio_evm_scope", "account", "linked_evm_address", "evm_contract"]},
-                    {name: 'request', children: []}
+                    {name: 'request', children: []},
+                    {
+                        name: 'caller',
+                        children: ['name','permission','private_key','signing_key']
+                    }
                 ]
             },
             {
                 name: 'gas',
                 children: [
                     {name: 'account' },
-                    {name: 'bridge', children: ["account", "evm_contract"] }
+                    {name: 'bridge', children: ["account", "evm_contract"] },
+                    {
+                        name: 'caller',
+                        children: ['name','permission','private_key','signing_key']
+                    }
                 ]
             }
         ];
@@ -39,7 +51,11 @@ class ConfigLoader {
                 children: [
                     {name: 'services'},
                     {name: 'account'},
-                    {name: 'update_interval_ms'}
+                    {name: 'update_interval_ms'},
+                    {
+                        name: 'caller',
+                        children: ['name','permission','private_key']
+                    }
                 ]
             }
         ];
