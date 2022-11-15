@@ -20,6 +20,7 @@ class Listener {
         this.max_block_diff = config.max_block_diff;
         this.hyperion = hyperion;
         this.rpc = rpc;
+        this.trx_batch_size = config.trx_batch_size;
         this.console_log = (config.console_log) ? true : false;
         this.counter = 0;
         this.checking_table = false;
@@ -53,7 +54,7 @@ class Listener {
                     code: account,
                     scope: scope,
                     table: table,
-                    limit: 20,
+                    limit: this.trx_batch_size,
                     lower_bound: this.next_key
                 });
                 this.log(`${name}: Table check has retreived ${results.rows.length} request rows`);
