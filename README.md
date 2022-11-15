@@ -56,12 +56,10 @@ vi config.yml
 You will find a description of each configuration item below.
 
 ### > Antelope
-```
 
 #### RPC / Hyperion
 
 Endpoint configuration for Antelope.
-
 
 ```
   rpc: "https://testnet.telos.caleos.io"
