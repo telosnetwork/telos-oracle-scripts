@@ -7,7 +7,7 @@ const Api = Eos.Api;
 
 class Updater {
     constructor(oracle, config, rpc, caller){
-        this.update_interval_ms = updater_config.update_interval_ms;
+        this.update_interval_ms = config.update_interval_ms;
         this.caller = caller;
         this.oracle = oracle;
         this.console_log = config.console_log ? true : false;
