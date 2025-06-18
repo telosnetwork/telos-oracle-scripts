@@ -58,6 +58,13 @@ scripts:
         check_interval_ms: 3000
         evm_contract: "0x648ac5a8c4E1ae5A93cd5BeDF143B095B8c49a2a"
         account: "gasbridge"
+    evmvote:
+      active: false
+      vote_manager_contract: "0x4D980DeB321E50af39E58551D123831A21Bc4508"
+      caller:
+        name: "oracletest"
+        permission: "active"
+        private_key: "5J2wq...."
   updaters:
     caller:
       name: "oracletest"
